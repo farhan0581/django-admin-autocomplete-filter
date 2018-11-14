@@ -2,6 +2,7 @@
 Django Inspectdb Refactor
 ========================
 A simple Django app to render list filters in django admin using autocomplete widget.
+
 Overview:
 ---------
 
@@ -18,33 +19,23 @@ Django's ``inspectb`` command prepares database models classes based on existing
 
 Requirements:
 -----------
-Requires Django version >= 1.9
+Requires Django version >= 2.0
 
 Installation:
 ------------
 You can install it via pip or to get the latest version clone this repo.
 
 `
-pip install django-inspectdb-refactor 
+pip install django-admin-autocomplete-filter
 `
 
-Add ``inspectdb_refactor`` to your ``INSTALLED_APPS`` inside settings.py of your project.
+Add ``admin_auto_filters`` to your ``INSTALLED_APPS`` inside settings.py of your project.
 
 Usage:
 -----
- The command accepts two command line arguments:
-  
-  - ``app`` : This is a required argument. You need to provide app_label in order to 
-          make models in that particular app.
-  - ``database``: To specify a particular database. Otherwise picks default from settings.
-  
-  For example, If you have an app called ``products`` and database ``product_db`` then
-  
-  `
-  python manage.py inspectdb_refactor --database=product --app=product_db
-  `
+dfdf
  
 
 License:
 --------
-Django Inspectdb Refactor is an Open Source project licensed under the terms of the BSD3 license.
+Django Inspectdb Refactor is an Open Source project licensed under the terms of the GNU GENERAL PUBLIC LICENSE.
