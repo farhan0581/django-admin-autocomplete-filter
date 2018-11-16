@@ -6,15 +6,10 @@ A simple Django app to render list filters in django admin using autocomplete wi
 Overview:
 ---------
 
-Django's ``inspectb`` command prepares database models classes based on existing database.
-    This is very handy tool, in case we have to work on some already existing database.
-    
-   It outputs the classes to standard output, which can be pipelined to a python file.
-    
- But when you have a large database, containing hundreds of tables, the models file becomes too large. It is better to write ``separate model file for each table`` and keep that under models folder inside the app directory. Django will get the model classes from the ``init`` file you write inside the models folder.
- Same holds for admin, views and forms.
-    
- Django Inspectdb Refactor will automatically create the required folders and create separate python files for each model.
+Django comes preshipped with an admin panel which is a great utility to create quick CRUD's.
+The django 2.0 came with much needed autocomplete_fields which uses select2 widget that comes with a search feature that loads the options asynchronously.
+We can use this in django admin list filter.
+
     
 
 Requirements:
