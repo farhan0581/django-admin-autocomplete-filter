@@ -1,6 +1,6 @@
 
-Django Inspectdb Refactor
-========================
+Django Admin Autocomplete Filter
+================================
 A simple Django app to render list filters in django admin using autocomplete widget.
 
 Overview:
@@ -64,4 +64,4 @@ After following these steps you may see the filter as:
 
 License:
 --------
-Django Inspectdb Refactor is an Open Source project licensed under the terms of the GNU GENERAL PUBLIC LICENSE.
+Django Admin Autocomplete Filter is an Open Source project licensed under the terms of the GNU GENERAL PUBLIC LICENSE.
