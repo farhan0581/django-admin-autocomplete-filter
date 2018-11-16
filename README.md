@@ -7,7 +7,7 @@ Overview:
 ---------
 
 Django comes preshipped with an admin panel which is a great utility to create quick CRUD's.
-The django 2.0 came with much needed autocomplete_fields which uses select2 widget that comes with a search feature that loads the options asynchronously.
+The django 2.0 came with much needed [autocomplete_fields](https://docs.djangoproject.com/en/2.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.autocomplete_fields "autocomplete_fields") which uses select2 widget that comes with a search feature that loads the options asynchronously.
 We can use this in django admin list filter.
 
     
@@ -28,8 +28,39 @@ Add ``admin_auto_filters`` to your ``INSTALLED_APPS`` inside settings.py of your
 
 Usage:
 -----
-dfdf
- 
+Let's say we have following models:
+```
+class Artist(models.Model):
+    name = models.CharField(max_length=128)
+
+class Album(models.Model):
+    name = models.CharField(max_length=64)
+    artist = models.ForeignKey(Artist, on_delete=models.CASCADE)
+    cover = models.CharField(max_length=256, null=True, default=None)
+```
+And you would like to filter results in Album Admin on the basis of artist, then you can define `search fields` in Artist and then define filter as:
+
+```
+from admin_auto_filters.filters import AutocompleteFilter
+
+class ArtistFilter(AutocompleteFilter):
+    title = 'Artist' # display title
+    field_name = 'artist' # name of the foreign key field
+
+class ArtistAdmin(admin.ModelAdmin):
+    search_fields = ['name']
+	...
+
+class AlbumAdmin(admin.ModelAdmin):
+    list_filter = [ArtistFilter]
+	...
+```
+
+After following these steps you may see the filter as:
+
+![](https://raw.githubusercontent.com/farhan0581/django-admin-autocomplete-filter/master/admin_auto_filters/media/screenshot1.png)
+
+![](https://raw.githubusercontent.com/farhan0581/django-admin-autocomplete-filter/master/admin_auto_filters/media/screenshot2.png)
 
 License:
 --------
