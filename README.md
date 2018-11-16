@@ -29,7 +29,7 @@ Add ``admin_auto_filters`` to your ``INSTALLED_APPS`` inside settings.py of your
 Usage:
 -----
 Let's say we have following models:
-```
+``` python
 class Artist(models.Model):
     name = models.CharField(max_length=128)
 
@@ -40,7 +40,7 @@ class Album(models.Model):
 ```
 And you would like to filter results in Album Admin on the basis of artist, then you can define `search fields` in Artist and then define filter as:
 
-```
+``` python
 from admin_auto_filters.filters import AutocompleteFilter
 
 class ArtistFilter(AutocompleteFilter):
@@ -48,7 +48,7 @@ class ArtistFilter(AutocompleteFilter):
     field_name = 'artist' # name of the foreign key field
 
 class ArtistAdmin(admin.ModelAdmin):
-    search_fields = ['name']
+    search_fields = ['name'] # this is required for django's autocomplete functionality
 	...
 
 class AlbumAdmin(admin.ModelAdmin):
