@@ -1,7 +1,7 @@
 
 Django Admin Autocomplete Filter
 ================================
-A simple Django app to render list filters in django admin using autocomplete widget.
+A simple Django app to render list filters in django admin using autocomplete widget. This app is heavily inspired from [dal-admin-filters.](https://github.com/shamanu4/dal_admin_filters)
 
 Overview:
 ---------
