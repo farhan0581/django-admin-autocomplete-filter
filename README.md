@@ -1,3 +1,4 @@
+[![PyPI version](https://badge.fury.io/py/django-admin-autocomplete-filter.svg)](https://badge.fury.io/py/django-admin-autocomplete-filter)
 
 Django Admin Autocomplete Filter
 ================================
