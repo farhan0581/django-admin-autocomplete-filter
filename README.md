@@ -54,6 +54,13 @@ class ArtistAdmin(admin.ModelAdmin):
 
 class AlbumAdmin(admin.ModelAdmin):
     list_filter = [ArtistFilter]
+    
+    '''
+       defining this class is required for AutocompleteFilter
+       it's a bug and I am working on it.
+    '''
+    class Media:
+        pass
 	...
 ```
 
