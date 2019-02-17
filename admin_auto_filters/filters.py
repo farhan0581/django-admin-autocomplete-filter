@@ -6,7 +6,7 @@ from django.forms.widgets import Media, MEDIA_TYPES
 
 
 class AutocompleteFilter(admin.SimpleListFilter):
-    template = 'autocomplete-filter.html'
+    template = 'django-admin-autocomplete-filter/autocomplete-filter.html'
     title = ''
     field_name = ''
     field_pk = 'id'
@@ -16,11 +16,11 @@ class AutocompleteFilter(admin.SimpleListFilter):
 
     class Media:
         js = (
-            'js/autocomplete_filter_qs.js',
+            'django-admin-autocomplete-filter/js/autocomplete_filter_qs.js',
         )
         css = {
             'screen': (
-                'css/autocomplete-fix.css',
+                'django-admin-autocomplete-filter/css/autocomplete-fix.css',
             ),
         }
 
