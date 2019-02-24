@@ -9,10 +9,10 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='django-admin-autocomplete-filter',
-    version='0.1',
+    version='0.2',
     packages=find_packages(),
     include_package_data=True,
-    license='GNU General Public License v3.0',  # example license
+    license='GNU Lesser General Public License v3 (LGPLv3)',  # example license
     description='A simple Django app to render list filters in django admin using autocomplete widget',
     long_description=README,
     url='https://github.com/farhan0581/django-admin-autocomplete-filter',
@@ -25,7 +25,7 @@ setup(
         'Framework :: Django',
         'Framework :: Django :: 2.0',  # replace "X.Y" as appropriate
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: GNU General Public License v3.0',  # example license
+        'License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)',  # example license
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',

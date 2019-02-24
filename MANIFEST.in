@@ -2,3 +2,6 @@ include README.md
 include LICENSE
 include requirements.txt
 recursive-include docs *
+include admin_auto_filters/static/css/*.css
+include admin_auto_filters/static/js/*.js
+include admin_auto_filters/templates/*.html
