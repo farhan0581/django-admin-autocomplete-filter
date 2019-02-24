@@ -48,9 +48,18 @@ class AutocompleteFilter(admin.SimpleListFilter):
         remote_field = model._meta.get_field(self.field_name).remote_field
 
         attrs = self.widget_attrs.copy()
-       
+
+        field_desc = getattr(model, self.field_name)
+        try:
+            # First try to get the related using logic from ManyToManyDescriptor; any of these accesses might fail
+            related_model = field_desc.rel.related_model if field_desc.reverse else field_desc.rel.model
+            queryset = related_model.objects.get_queryset()
+        except:
+            # Fall back to behavior that should work with ReverseManyToOneDescriptor created by ForeignKey
+            queryset = field_desc.get_queryset()
+
         field = forms.ModelChoiceField(
-            queryset=getattr(model, self.field_name).get_queryset(),
+            queryset=queryset,
             widget=AutocompleteSelect(remote_field, model_admin.admin_site),
             required=False
         )
