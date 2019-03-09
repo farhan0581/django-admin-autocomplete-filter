@@ -2,6 +2,7 @@ from django.contrib.admin.widgets import AutocompleteSelect
 from django import forms
 from django.contrib import admin
 from django.core.exceptions import ImproperlyConfigured
+from django.db.models.fields.related_descriptors import ReverseManyToOneDescriptor, ManyToManyDescriptor
 from django.forms.widgets import Media, MEDIA_TYPES
 
 
@@ -54,7 +55,14 @@ class AutocompleteFilter(admin.SimpleListFilter):
         )
 
     def get_queryset_for_field(self, model, name):
-        return getattr(model, name).get_queryset()
+        field_desc = getattr(model, name)
+        if isinstance(field_desc, ManyToManyDescriptor):
+            related_model = field_desc.rel.related_model if field_desc.reverse else field_desc.rel.model
+        elif isinstance(field_desc, ReverseManyToOneDescriptor):
+            related_model = field_desc.rel.related_model
+        else:
+            return field_desc.get_queryset()
+        return related_model.objects.get_queryset()
 
     def _add_media(self, model_admin, widget):
 
