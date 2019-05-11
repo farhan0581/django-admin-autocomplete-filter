@@ -14,6 +14,7 @@ class AutocompleteFilter(admin.SimpleListFilter):
     is_placeholder_title = False
     widget_attrs = {}
     rel_model = None
+    form_field = forms.ModelChoiceField
 
     class Media:
         js = (
@@ -35,7 +36,8 @@ class AutocompleteFilter(admin.SimpleListFilter):
         remote_field = model._meta.get_field(self.field_name).remote_field
 
         widget = AutocompleteSelect(remote_field, model_admin.admin_site)
-        field = forms.ModelChoiceField(
+        form_field = self.get_form_field()
+        field = form_field(
             queryset=self.get_queryset_for_field(model, self.field_name),
             widget=widget,
             required=False,
@@ -63,6 +65,10 @@ class AutocompleteFilter(admin.SimpleListFilter):
         else:
             return field_desc.get_queryset()
         return related_model.objects.get_queryset()
+
+    def get_form_field(self):
+        """Return the type of form field to be used."""
+        return self.form_field
 
     def _add_media(self, model_admin, widget):
 
