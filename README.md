@@ -70,6 +70,53 @@ After following these steps you may see the filter as:
 
 ![](https://raw.githubusercontent.com/farhan0581/django-admin-autocomplete-filter/master/admin_auto_filters/media/screenshot2.png)
 
+
+Now you can also register your custom view instead of using django admin's search_results to control the results in the autocomplete. For this you will need to create your custom view and register the url in your admin class as shown below:
+
+In your views.py:
+
+```python
+from admin_auto_filters.views import AutocompleteJsonView
+
+class CustomSearchView(AutocompleteJsonView):
+    def get_queryset(self):
+    '''
+       your custom logic goes here.
+    '''
+        queryset = Artist.objects.all().order_by('name')
+        return queryset
+```
+
+After this, register this view in your admin class as:
+
+```python
+
+class AlbumAdmin(admin.ModelAdmin):
+    list_filter = [ArtistFilter]
+
+    class Media:
+        pass
+    
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path('custom_search/', self.admin_site.admin_view(CustomSearchView.as_view(model_admin=self)),
+                 name='custom_search'),
+        ]
+        return custom_urls + urls
+```
+
+Finally just tell the filter class to use this new view as:
+
+```python
+class ArtistFilter(AutocompleteFilter):
+    title = 'Artist'
+    field_name = 'artist'
+
+    def get_autocomplete_url(self, request, model_admin):
+        return reverse('admin:custom_search')
+```
+
 License:
 --------
 Django Admin Autocomplete Filter is an Open Source project licensed under the terms of the GNU GENERAL PUBLIC LICENSE.
