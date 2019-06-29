@@ -1,9 +1,18 @@
-from django.contrib.admin.widgets import AutocompleteSelect
+from django.contrib.admin.widgets import AutocompleteSelect as Base
 from django import forms
 from django.contrib import admin
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models.fields.related_descriptors import ReverseManyToOneDescriptor, ManyToManyDescriptor
 from django.forms.widgets import Media, MEDIA_TYPES
+
+
+class AutocompleteSelect(Base):
+    def __init__(self, rel, admin_site, attrs=None, choices=(), using=None, custom_url=None):
+        self.custom_url = custom_url
+        super().__init__(rel, admin_site, attrs, choices, using)
+    
+    def get_url(self):
+        return self.custom_url if self.custom_url else super().get_url()
 
 
 class AutocompleteFilter(admin.SimpleListFilter):
@@ -35,7 +44,9 @@ class AutocompleteFilter(admin.SimpleListFilter):
 
         remote_field = model._meta.get_field(self.field_name).remote_field
 
-        widget = AutocompleteSelect(remote_field, model_admin.admin_site)
+        widget = AutocompleteSelect(remote_field,
+                                    model_admin.admin_site,
+                                    custom_url=self.get_autocomplete_url(request, model_admin),)
         form_field = self.get_form_field()
         field = form_field(
             queryset=self.get_queryset_for_field(model, self.field_name),
@@ -94,3 +105,10 @@ class AutocompleteFilter(admin.SimpleListFilter):
             return queryset.filter(**{self.parameter_name: self.value()})
         else:
             return queryset
+    
+    def get_autocomplete_url(self, request, model_admin):
+        '''
+            Hook to specify your custom view for autocomplete,
+            instead of default django admin's search_results.
+        '''
+        return None
