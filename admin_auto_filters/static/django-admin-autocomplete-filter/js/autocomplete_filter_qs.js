@@ -1,9 +1,5 @@
-if (!$) {
-    $ = django.jQuery;
-};
-
-$(document).ready(function () {
-  $('#changelist-filter select').on(
+django.jQuery(document).ready(function () {
+  django.jQuery('#changelist-filter select').on(
       'change',
       function (e, choice) {
           var val = $(e.target).val() || '';
