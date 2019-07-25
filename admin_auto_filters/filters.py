@@ -1,18 +1,10 @@
-from django.contrib.admin.widgets import AutocompleteSelect as Base
+from django.contrib.admin.widgets import AutocompleteSelectMultiple
 from django import forms
 from django.contrib import admin
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models.fields.related_descriptors import ReverseManyToOneDescriptor, ManyToManyDescriptor
 from django.forms.widgets import Media, MEDIA_TYPES
-
-
-class AutocompleteSelect(Base):
-    def __init__(self, rel, admin_site, attrs=None, choices=(), using=None, custom_url=None):
-        self.custom_url = custom_url
-        super().__init__(rel, admin_site, attrs, choices, using)
-    
-    def get_url(self):
-        return self.custom_url if self.custom_url else super().get_url()
+from django.db.models import Q
 
 
 class AutocompleteFilter(admin.SimpleListFilter):
@@ -23,7 +15,7 @@ class AutocompleteFilter(admin.SimpleListFilter):
     is_placeholder_title = False
     widget_attrs = {}
     rel_model = None
-    form_field = forms.ModelChoiceField
+    form_field = forms.ModelMultipleChoiceField
 
     class Media:
         js = (
@@ -36,7 +28,8 @@ class AutocompleteFilter(admin.SimpleListFilter):
         }
 
     def __init__(self, request, params, model, model_admin):
-        self.parameter_name = '{}__{}__exact'.format(self.field_name, self.field_pk)
+        self.parameter_name = '{}__{}__in'.format(
+            self.field_name, self.field_pk)
         super().__init__(request, params, model, model_admin)
 
         if self.rel_model:
@@ -44,9 +37,8 @@ class AutocompleteFilter(admin.SimpleListFilter):
 
         remote_field = model._meta.get_field(self.field_name).remote_field
 
-        widget = AutocompleteSelect(remote_field,
-                                    model_admin.admin_site,
-                                    custom_url=self.get_autocomplete_url(request, model_admin),)
+        widget = AutocompleteSelectMultiple(
+            remote_field, model_admin.admin_site)
         form_field = self.get_form_field()
         field = form_field(
             queryset=self.get_queryset_for_field(model, self.field_name),
@@ -63,7 +55,7 @@ class AutocompleteFilter(admin.SimpleListFilter):
             attrs['data-Placeholder'] = self.title
         self.rendered_widget = field.widget.render(
             name=self.parameter_name,
-            value=self.used_parameters.get(self.parameter_name, ''),
+            value=self.value(),
             attrs=attrs
         )
 
@@ -82,14 +74,25 @@ class AutocompleteFilter(admin.SimpleListFilter):
         return self.form_field
 
     def _add_media(self, model_admin, widget):
-
         if not hasattr(model_admin, 'Media'):
-            raise ImproperlyConfigured('Add empty Media class to %s. Sorry about this bug.' % model_admin)
+            raise ImproperlyConfigured(
+                'Add empty Media class to %s. Sorry about this bug.' % model_admin)
 
         def _get_media(obj):
             return Media(media=getattr(obj, 'Media', None))
 
-        media = _get_media(model_admin) + widget.media + _get_media(AutocompleteFilter) + _get_media(self)
+        class FilterMedia:
+            js = (
+                'admin/js/jquery.init.js',
+                'django-admin-autocomplete-filter/js/autocomplete_filter_qs.js',
+            )
+            css = {
+                'screen': (
+                    'django-admin-autocomplete-filter/css/autocomplete-fix.css',
+                ),
+            }
+
+        media = _get_media(model_admin) + widget.media + Media(FilterMedia)
 
         for name in MEDIA_TYPES:
             setattr(model_admin.Media, name, getattr(media, "_" + name))
@@ -100,12 +103,15 @@ class AutocompleteFilter(admin.SimpleListFilter):
     def lookups(self, request, model_admin):
         return ()
 
+    def value(self):
+        return self.used_parameters.get(self.parameter_name).split(',') if self.used_parameters.get(self.parameter_name) else []
+
     def queryset(self, request, queryset):
         if self.value():
             return queryset.filter(**{self.parameter_name: self.value()})
         else:
             return queryset
-    
+
     def get_autocomplete_url(self, request, model_admin):
         '''
             Hook to specify your custom view for autocomplete,
