@@ -4,7 +4,6 @@ from django.contrib import admin
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models.fields.related_descriptors import ReverseManyToOneDescriptor, ManyToManyDescriptor
 from django.forms.widgets import Media, MEDIA_TYPES
-from django.db.models import Q
 
 
 class AutocompleteFilter(admin.SimpleListFilter):
@@ -104,7 +103,10 @@ class AutocompleteFilter(admin.SimpleListFilter):
         return ()
 
     def value(self):
-        return self.used_parameters.get(self.parameter_name).split(',') if self.used_parameters.get(self.parameter_name) else []
+        if self.used_parameters.get(self.parameter_name):
+            return self.used_parameters.get(self.parameter_name).split(',')
+        else:
+            return []
 
     def queryset(self, request, queryset):
         if self.value():
