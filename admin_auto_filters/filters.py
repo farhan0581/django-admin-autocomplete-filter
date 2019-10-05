@@ -27,6 +27,7 @@ class AutocompleteFilter(admin.SimpleListFilter):
 
     class Media:
         js = (
+            'admin/js/jquery.init.js',
             'django-admin-autocomplete-filter/js/autocomplete_filter_qs.js',
         )
         css = {
