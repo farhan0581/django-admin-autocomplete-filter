@@ -2,7 +2,7 @@ django.jQuery(document).ready(function () {
   django.jQuery('#changelist-filter select').on(
       'change',
       function (e, choice) {
-          var val = $(e.target).val() || '';
+          var val = django.jQuery(e.target).val() || '';
           var class_name = this.className;
           var param = this.name;
           if (class_name.includes('admin-autocomplete'))
