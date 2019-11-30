@@ -1,0 +1,598 @@
+[
+  {
+    "fields": {
+      "app_label": "admin",
+      "model": "logentry"
+    },
+    "model": "contenttypes.contenttype",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "app_label": "auth",
+      "model": "permission"
+    },
+    "model": "contenttypes.contenttype",
+    "pk": 2
+  },
+  {
+    "fields": {
+      "app_label": "auth",
+      "model": "group"
+    },
+    "model": "contenttypes.contenttype",
+    "pk": 3
+  },
+  {
+    "fields": {
+      "app_label": "auth",
+      "model": "user"
+    },
+    "model": "contenttypes.contenttype",
+    "pk": 4
+  },
+  {
+    "fields": {
+      "app_label": "contenttypes",
+      "model": "contenttype"
+    },
+    "model": "contenttypes.contenttype",
+    "pk": 5
+  },
+  {
+    "fields": {
+      "app_label": "sessions",
+      "model": "session"
+    },
+    "model": "contenttypes.contenttype",
+    "pk": 6
+  },
+  {
+    "fields": {
+      "app_label": "testapp",
+      "model": "food"
+    },
+    "model": "contenttypes.contenttype",
+    "pk": 7
+  },
+  {
+    "fields": {
+      "app_label": "testapp",
+      "model": "person"
+    },
+    "model": "contenttypes.contenttype",
+    "pk": 8
+  },
+  {
+    "fields": {
+      "app_label": "testapp",
+      "model": "collection"
+    },
+    "model": "contenttypes.contenttype",
+    "pk": 9
+  },
+  {
+    "fields": {
+      "app_label": "testapp",
+      "model": "book"
+    },
+    "model": "contenttypes.contenttype",
+    "pk": 10
+  },
+  {
+    "fields": {
+      "password": "undefined",
+      "last_login": null,
+      "is_superuser": true,
+      "username": "user",
+      "first_name": "",
+      "last_name": "",
+      "email": "",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2020-01-01T00:00:00.000Z",
+      "groups": [],
+      "user_permissions": []
+    },
+    "model": "auth.user",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "name": "Spam"
+    },
+    "model": "testapp.food",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "name": "Eggs"
+    },
+    "model": "testapp.food",
+    "pk": 2
+  },
+  {
+    "fields": {
+      "name": "Toast"
+    },
+    "model": "testapp.food",
+    "pk": 3
+  },
+  {
+    "fields": {
+      "name": "Tomatoes"
+    },
+    "model": "testapp.food",
+    "pk": 4
+  },
+  {
+    "fields": {
+      "name": "Coffee"
+    },
+    "model": "testapp.food",
+    "pk": 5
+  },
+  {
+    "fields": {
+      "best_friend": null,
+      "favorite_food": null,
+      "name": "Alice",
+      "siblings": [
+        2
+      ]
+    },
+    "model": "testapp.person",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "best_friend": 1,
+      "favorite_food": 1,
+      "name": "Bob",
+      "siblings": [
+        1,
+        3
+      ]
+    },
+    "model": "testapp.person",
+    "pk": 2
+  },
+  {
+    "fields": {
+      "best_friend": 1,
+      "favorite_food": 3,
+      "name": "Carol"
+    },
+    "model": "testapp.person",
+    "pk": 3
+  },
+  {
+    "fields": {
+      "best_friend": 2,
+      "favorite_food": 3,
+      "name": "David",
+      "siblings": [
+        2
+      ]
+    },
+    "model": "testapp.person",
+    "pk": 4
+  },
+  {
+    "fields": {
+      "curators": [
+        1,
+        2
+      ],
+      "name": "Library"
+    },
+    "model": "testapp.collection",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "curators": [
+        2
+      ],
+      "name": "Bookstore"
+    },
+    "model": "testapp.collection",
+    "pk": 2
+  },
+  {
+    "fields": {
+      "author": 1,
+      "coll": 1,
+      "title": "The Funniest Joke in the World"
+    },
+    "model": "testapp.book",
+    "pk": 1234
+  },
+  {
+    "fields": {
+      "author": 2,
+      "coll": 1,
+      "title": "Fish-Slapping Dances"
+    },
+    "model": "testapp.book",
+    "pk": 42
+  },
+  {
+    "fields": {
+      "author": 4,
+      "coll": 2,
+      "title": "The Meaning of Life"
+    },
+    "model": "testapp.book",
+    "pk": 2357
+  },
+  {
+    "fields": {
+      "author": 4,
+      "coll": 1,
+      "title": "Camelot"
+    },
+    "model": "testapp.book",
+    "pk": 1111
+  },
+  {
+    "fields": {
+      "codename": "add_logentry",
+      "content_type": 1,
+      "name": "Can add log entry"
+    },
+    "model": "auth.permission",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "codename": "change_logentry",
+      "content_type": 1,
+      "name": "Can change log entry"
+    },
+    "model": "auth.permission",
+    "pk": 2
+  },
+  {
+    "fields": {
+      "codename": "delete_logentry",
+      "content_type": 1,
+      "name": "Can delete log entry"
+    },
+    "model": "auth.permission",
+    "pk": 3
+  },
+  {
+    "fields": {
+      "codename": "view_logentry",
+      "content_type": 1,
+      "name": "Can view log entry"
+    },
+    "model": "auth.permission",
+    "pk": 4
+  },
+  {
+    "fields": {
+      "codename": "add_permission",
+      "content_type": 2,
+      "name": "Can add permission"
+    },
+    "model": "auth.permission",
+    "pk": 5
+  },
+  {
+    "fields": {
+      "codename": "change_permission",
+      "content_type": 2,
+      "name": "Can change permission"
+    },
+    "model": "auth.permission",
+    "pk": 6
+  },
+  {
+    "fields": {
+      "codename": "delete_permission",
+      "content_type": 2,
+      "name": "Can delete permission"
+    },
+    "model": "auth.permission",
+    "pk": 7
+  },
+  {
+    "fields": {
+      "codename": "view_permission",
+      "content_type": 2,
+      "name": "Can view permission"
+    },
+    "model": "auth.permission",
+    "pk": 8
+  },
+  {
+    "fields": {
+      "codename": "add_group",
+      "content_type": 3,
+      "name": "Can add group"
+    },
+    "model": "auth.permission",
+    "pk": 9
+  },
+  {
+    "fields": {
+      "codename": "change_group",
+      "content_type": 3,
+      "name": "Can change group"
+    },
+    "model": "auth.permission",
+    "pk": 10
+  },
+  {
+    "fields": {
+      "codename": "delete_group",
+      "content_type": 3,
+      "name": "Can delete group"
+    },
+    "model": "auth.permission",
+    "pk": 11
+  },
+  {
+    "fields": {
+      "codename": "view_group",
+      "content_type": 3,
+      "name": "Can view group"
+    },
+    "model": "auth.permission",
+    "pk": 12
+  },
+  {
+    "fields": {
+      "codename": "add_user",
+      "content_type": 4,
+      "name": "Can add user"
+    },
+    "model": "auth.permission",
+    "pk": 13
+  },
+  {
+    "fields": {
+      "codename": "change_user",
+      "content_type": 4,
+      "name": "Can change user"
+    },
+    "model": "auth.permission",
+    "pk": 14
+  },
+  {
+    "fields": {
+      "codename": "delete_user",
+      "content_type": 4,
+      "name": "Can delete user"
+    },
+    "model": "auth.permission",
+    "pk": 15
+  },
+  {
+    "fields": {
+      "codename": "view_user",
+      "content_type": 4,
+      "name": "Can view user"
+    },
+    "model": "auth.permission",
+    "pk": 16
+  },
+  {
+    "fields": {
+      "codename": "add_contenttype",
+      "content_type": 5,
+      "name": "Can add content type"
+    },
+    "model": "auth.permission",
+    "pk": 17
+  },
+  {
+    "fields": {
+      "codename": "change_contenttype",
+      "content_type": 5,
+      "name": "Can change content type"
+    },
+    "model": "auth.permission",
+    "pk": 18
+  },
+  {
+    "fields": {
+      "codename": "delete_contenttype",
+      "content_type": 5,
+      "name": "Can delete content type"
+    },
+    "model": "auth.permission",
+    "pk": 19
+  },
+  {
+    "fields": {
+      "codename": "view_contenttype",
+      "content_type": 5,
+      "name": "Can view content type"
+    },
+    "model": "auth.permission",
+    "pk": 20
+  },
+  {
+    "fields": {
+      "codename": "add_session",
+      "content_type": 6,
+      "name": "Can add session"
+    },
+    "model": "auth.permission",
+    "pk": 21
+  },
+  {
+    "fields": {
+      "codename": "change_session",
+      "content_type": 6,
+      "name": "Can change session"
+    },
+    "model": "auth.permission",
+    "pk": 22
+  },
+  {
+    "fields": {
+      "codename": "delete_session",
+      "content_type": 6,
+      "name": "Can delete session"
+    },
+    "model": "auth.permission",
+    "pk": 23
+  },
+  {
+    "fields": {
+      "codename": "view_session",
+      "content_type": 6,
+      "name": "Can view session"
+    },
+    "model": "auth.permission",
+    "pk": 24
+  },
+  {
+    "fields": {
+      "codename": "add_food",
+      "content_type": 7,
+      "name": "Can add food"
+    },
+    "model": "auth.permission",
+    "pk": 25
+  },
+  {
+    "fields": {
+      "codename": "change_food",
+      "content_type": 7,
+      "name": "Can change food"
+    },
+    "model": "auth.permission",
+    "pk": 26
+  },
+  {
+    "fields": {
+      "codename": "delete_food",
+      "content_type": 7,
+      "name": "Can delete food"
+    },
+    "model": "auth.permission",
+    "pk": 27
+  },
+  {
+    "fields": {
+      "codename": "view_food",
+      "content_type": 7,
+      "name": "Can view food"
+    },
+    "model": "auth.permission",
+    "pk": 28
+  },
+  {
+    "fields": {
+      "codename": "add_person",
+      "content_type": 8,
+      "name": "Can add person"
+    },
+    "model": "auth.permission",
+    "pk": 29
+  },
+  {
+    "fields": {
+      "codename": "change_person",
+      "content_type": 8,
+      "name": "Can change person"
+    },
+    "model": "auth.permission",
+    "pk": 30
+  },
+  {
+    "fields": {
+      "codename": "delete_person",
+      "content_type": 8,
+      "name": "Can delete person"
+    },
+    "model": "auth.permission",
+    "pk": 31
+  },
+  {
+    "fields": {
+      "codename": "view_person",
+      "content_type": 8,
+      "name": "Can view person"
+    },
+    "model": "auth.permission",
+    "pk": 32
+  },
+  {
+    "fields": {
+      "codename": "add_collection",
+      "content_type": 9,
+      "name": "Can add collection"
+    },
+    "model": "auth.permission",
+    "pk": 33
+  },
+  {
+    "fields": {
+      "codename": "change_collection",
+      "content_type": 9,
+      "name": "Can change collection"
+    },
+    "model": "auth.permission",
+    "pk": 34
+  },
+  {
+    "fields": {
+      "codename": "delete_collection",
+      "content_type": 9,
+      "name": "Can delete collection"
+    },
+    "model": "auth.permission",
+    "pk": 35
+  },
+  {
+    "fields": {
+      "codename": "view_collection",
+      "content_type": 9,
+      "name": "Can view collection"
+    },
+    "model": "auth.permission",
+    "pk": 36
+  },
+  {
+    "fields": {
+      "codename": "add_book",
+      "content_type": 10,
+      "name": "Can add book"
+    },
+    "model": "auth.permission",
+    "pk": 37
+  },
+  {
+    "fields": {
+      "codename": "change_book",
+      "content_type": 10,
+      "name": "Can change book"
+    },
+    "model": "auth.permission",
+    "pk": 38
+  },
+  {
+    "fields": {
+      "codename": "delete_book",
+      "content_type": 10,
+      "name": "Can delete book"
+    },
+    "model": "auth.permission",
+    "pk": 39
+  },
+  {
+    "fields": {
+      "codename": "view_book",
+      "content_type": 10,
+      "name": "Can view book"
+    },
+    "model": "auth.permission",
+    "pk": 40
+  }
+]
