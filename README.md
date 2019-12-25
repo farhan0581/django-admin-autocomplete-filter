@@ -21,16 +21,18 @@ Installation:
 ------------
 You can install it via pip or to get the latest version clone this repo.
 
-`
+```shell script
 pip install django-admin-autocomplete-filter
-`
+```
 
-Add ``admin_auto_filters`` to your ``INSTALLED_APPS`` inside settings.py of your project.
+Add `admin_auto_filters` to your `INSTALLED_APPS` inside settings.py of your project.
 
 Usage:
 -----
 Let's say we have following models:
-``` python
+```python
+from django.db import models
+
 class Artist(models.Model):
     name = models.CharField(max_length=128)
 
@@ -41,27 +43,32 @@ class Album(models.Model):
 ```
 And you would like to filter results in Album Admin on the basis of artist, then you can define `search fields` in Artist and then define filter as:
 
-``` python
+```python
+from django.contrib import admin
 from admin_auto_filters.filters import AutocompleteFilter
+
 
 class ArtistFilter(AutocompleteFilter):
     title = 'Artist' # display title
     field_name = 'artist' # name of the foreign key field
 
+
 class ArtistAdmin(admin.ModelAdmin):
     search_fields = ['name'] # this is required for django's autocomplete functionality
-	...
+    # ...
+
 
 class AlbumAdmin(admin.ModelAdmin):
     list_filter = [ArtistFilter]
     
-    '''
-       defining this class is required for AutocompleteFilter
-       it's a bug and I am working on it.
-    '''
+    """
+        defining this class is required for AutocompleteFilter
+        it's a bug and I am working on it.
+    """
     class Media:
         pass
-	...
+    
+    # ...
 ```
 
 After following these steps you may see the filter as:
@@ -78,11 +85,12 @@ In your views.py:
 ```python
 from admin_auto_filters.views import AutocompleteJsonView
 
+
 class CustomSearchView(AutocompleteJsonView):
     def get_queryset(self):
-    '''
-       your custom logic goes here.
-    '''
+        """
+           your custom logic goes here.
+        """
         queryset = Artist.objects.all().order_by('name')
         return queryset
 ```
@@ -90,6 +98,9 @@ class CustomSearchView(AutocompleteJsonView):
 After this, register this view in your admin class as:
 
 ```python
+from django.contrib import admin
+from django.urls import path
+
 
 class AlbumAdmin(admin.ModelAdmin):
     list_filter = [ArtistFilter]
@@ -109,6 +120,10 @@ class AlbumAdmin(admin.ModelAdmin):
 Finally just tell the filter class to use this new view as:
 
 ```python
+from django.shortcuts import reverse
+from admin_auto_filters.filters import AutocompleteFilter
+
+
 class ArtistFilter(AutocompleteFilter):
     title = 'Artist'
     field_name = 'artist'
