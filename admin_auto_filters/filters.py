@@ -19,7 +19,7 @@ class AutocompleteFilter(admin.SimpleListFilter):
     template = 'django-admin-autocomplete-filter/autocomplete-filter.html'
     title = ''
     field_name = ''
-    field_pk = 'id'
+    field_pk = 'pk'
     is_placeholder_title = False
     widget_attrs = {}
     rel_model = None
