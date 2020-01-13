@@ -23,6 +23,7 @@ class AutocompleteFilter(admin.SimpleListFilter):
     is_placeholder_title = False
     widget_attrs = {}
     rel_model = None
+    parameter_name = None
     form_field = forms.ModelChoiceField
 
     class Media:
@@ -37,7 +38,9 @@ class AutocompleteFilter(admin.SimpleListFilter):
         }
 
     def __init__(self, request, params, model, model_admin):
-        self.parameter_name = '{}__{}__exact'.format(self.field_name, self.field_pk)
+        if self.parameter_name is None:
+            self.parameter_name = '{}__{}__exact'.format(self.field_name,
+                                                         self.field_pk)
         super().__init__(request, params, model, model_admin)
 
         if self.rel_model:
