@@ -77,6 +77,8 @@ After following these steps you may see the filter as:
 
 ![](https://raw.githubusercontent.com/farhan0581/django-admin-autocomplete-filter/master/admin_auto_filters/media/screenshot2.png)
 
+Functionality to provide custom view for search:
+-----------------------------------------------
 
 Now you can also register your custom view instead of using django admin's search_results to control the results in the autocomplete. For this you will need to create your custom view and register the url in your admin class as shown below:
 
