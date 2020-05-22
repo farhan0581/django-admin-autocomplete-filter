@@ -128,6 +128,27 @@ class AutocompleteFilter(admin.SimpleListFilter):
         return None
 
 
+def generate_choice_field(label_item):
+    """
+    Create a ModelChoiceField variant with a modified label_from_instance.
+    Note that label_item can be a callable, or a model field, or a model callable.
+    """
+    class LabelledModelChoiceField(forms.ModelChoiceField):
+        def label_from_instance(self, obj):
+            if callable(label_item):
+                value = label_item(obj)
+            elif hasattr(obj, str(label_item)):
+                attr = getattr(obj, label_item)
+                if callable(attr):
+                    value = attr()
+                else:
+                    value = attr
+            else:
+                raise ValueError('Invalid label_item specified: %s' % str(label_item))
+            return value
+    return LabelledModelChoiceField
+
+
 def _get_rel_model(model, parameter_name):
     """
     A way to calculate the model for a parameter_name that includes LOOKUP_SEP.
@@ -142,13 +163,19 @@ def _get_rel_model(model, parameter_name):
         return rel_model
 
 
-def ACFilter(title, base_parameter_name, viewname='', use_pk_exact=False):
+def ACFilter(title, base_parameter_name, viewname='', use_pk_exact=False, label_by=str):
     """
     An autocomplete widget filter with a customizable title. Use like this:
         ACFilter('My title', 'field_name')
         ACFilter('My title', 'fourth__third__second__first')
     Be sure to include distinct in the model admin get_queryset() if the second form is used.
     Assumes: parameter_name == f'fourth__third__second__{field_name}'
+        * title: The title for the filter.
+        * base_parameter_name: The field to use for the filter.
+        * viewname: The name of the custom AutocompleteJsonView URL to use, if any.
+        * use_pk_exact: Whether to use '__pk__exact' in the parameter name when possible.
+        * label_by: How to generate the static label for the widget - a callable, the name
+          of a model callable, or the name of a model field.
     """
 
     class NewMetaFilter(type(AutocompleteFilter)):
@@ -169,6 +196,7 @@ def ACFilter(title, base_parameter_name, viewname='', use_pk_exact=False):
 
         def __init__(self, request, params, model, model_admin):
             self.rel_model = _get_rel_model(model, base_parameter_name)
+            self.form_field = generate_choice_field(label_by)
             super().__init__(request, params, model, model_admin)
             self.title = title
 

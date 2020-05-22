@@ -150,6 +150,78 @@ class AlbumAdmin(admin.ModelAdmin):
     list_filter = [
         ACFilter('Artist', 'artist', 'admin:custom_search', True)
     ]
+
+    def get_urls(self):
+        """As above..."""
+```
+
+Customizing Widget Text
+-----------------------
+
+It is also possible to customize the text displayed in the filter
+widget, to use something other than `str(obj)`. This needs to be
+configured for both the dropdown endpoint and the widget itself.
+
+In your views.py, override display_text:
+
+```python
+from admin_auto_filters.views import AutocompleteJsonView
+
+
+class CustomSearchView(AutocompleteJsonView):
+
+    @staticmethod
+    def display_text(obj):
+        return obj.my_str_method()
+
+    def get_queryset(self):
+        """As above..."""
+```
+
+In an AutocompleteFilter in your models.py, specify the form_field:
+
+```python
+from django import forms
+from django.contrib import admin
+from django.shortcuts import reverse
+from admin_auto_filters.filters import AutocompleteFilter
+
+
+class FoodChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.my_str_method()
+
+
+class ArtistFilter(AutocompleteFilter):
+    title = 'Artist'
+    field_name = 'artist'
+    form_field = FoodChoiceField
+
+    def get_autocomplete_url(self, request, model_admin):
+        return reverse('admin:custom_search')
+
+
+class AlbumAdmin(admin.ModelAdmin):
+    list_filter = [ArtistFilter]
+
+    def get_urls(self):
+        """As above..."""
+```
+
+In an ACFilter in your models.py, add a label_by argument:
+
+```python
+from django.contrib import admin
+from admin_auto_filters.filters import ACFilter
+
+
+class AlbumAdmin(admin.ModelAdmin):
+    list_filter = [
+        ACFilter('Artist', 'artist', 'admin:custom_search', True, label_by='my_str_method')
+    ]
+
+    def get_urls(self):
+        """As above..."""
 ```
 
 License:
