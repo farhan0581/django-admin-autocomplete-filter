@@ -87,9 +87,6 @@ class AutocompleteFilter(admin.SimpleListFilter):
 
     def _add_media(self, model_admin, widget):
 
-        if not hasattr(model_admin, 'Media'):
-            raise ImproperlyConfigured('Add empty Media class to %s. Sorry about this bug.' % model_admin)
-
         def _get_media(obj):
             return Media(media=getattr(obj, 'Media', None))
 
