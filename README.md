@@ -134,6 +134,24 @@ class ArtistFilter(AutocompleteFilter):
         return reverse('admin:custom_search')
 ```
 
+Shortcut for creating filters:
+------------------------------
+
+It is now possible to use the `ACFilter` shortcut to create filters
+on the fly, as shown below. Nested relations are supported, with
+no need to specify the model.
+
+```python
+from django.contrib import admin
+from admin_auto_filters.filters import ACFilter
+
+
+class AlbumAdmin(admin.ModelAdmin):
+    list_filter = [
+        ACFilter('Artist', 'artist', 'admin:custom_search', True)
+    ]
+```
+
 License:
 --------
 Django Admin Autocomplete Filter is an Open Source project licensed under the terms of the GNU GENERAL PUBLIC LICENSE.
