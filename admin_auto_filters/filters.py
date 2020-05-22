@@ -3,7 +3,7 @@ from django import forms
 from django.contrib import admin
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models.fields.related_descriptors import ReverseManyToOneDescriptor, ManyToManyDescriptor
-from django.forms.widgets import Media, MEDIA_TYPES
+from django.forms.widgets import Media
 
 
 class AutocompleteSelect(Base):
@@ -93,10 +93,13 @@ class AutocompleteFilter(admin.SimpleListFilter):
         def _get_media(obj):
             return Media(media=getattr(obj, 'Media', None))
 
-        media = _get_media(model_admin) + widget.media + _get_media(AutocompleteFilter) + _get_media(self)
+        media = _get_media(model_admin) + _get_media(self) + model_admin.media + widget.media + _get_media(
+            AutocompleteFilter)
 
-        for name in MEDIA_TYPES:
-            setattr(model_admin.Media, name, getattr(media, "_" + name))
+        def _new_media(self):
+            return media
+
+        model_admin.__class__.media = property(_new_media)
 
     def has_output(self):
         return True
