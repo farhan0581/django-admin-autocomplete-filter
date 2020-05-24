@@ -131,9 +131,6 @@ class FoodAdmin(CustomAdmin):
     readonly_fields = ['id']
     search_fields = ['id', 'name']
 
-    class Media:
-        pass
-
 
 @admin.register(Collection)
 class CollectionAdmin(CustomAdmin):
@@ -152,9 +149,6 @@ class CollectionAdmin(CustomAdmin):
     readonly_fields = ['id']
     search_fields = ['id', 'name', 'curators__name',
                      'book__title', 'book__author__name']
-
-    class Media:
-        pass
 
 
 @admin.register(Person)
@@ -183,9 +177,6 @@ class PersonAdmin(CustomAdmin):
     search_fields = ['id', 'name', 'best_friend__name',
                      'favorite_food__name', 'siblings__name']
 
-    class Media:
-        pass
-
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
@@ -213,6 +204,3 @@ class BookAdmin(CustomAdmin):
     ]
     ordering = ['isbn']
     search_fields = ['isbn', 'title', 'author__name', 'coll__name']
-
-    class Media:
-        pass
