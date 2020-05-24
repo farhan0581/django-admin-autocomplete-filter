@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models.constants import LOOKUP_SEP  # this is '__'
 from django.db.models.fields.related_descriptors import ReverseManyToOneDescriptor, ManyToManyDescriptor
-from django.forms.widgets import Media, MEDIA_TYPES
+from django.forms.widgets import Media, MEDIA_TYPES, media_property
 from django.shortcuts import reverse
 
 
@@ -92,7 +92,8 @@ class AutocompleteFilter(admin.SimpleListFilter):
     def _add_media(self, model_admin, widget):
 
         if not hasattr(model_admin, 'Media'):
-            raise ImproperlyConfigured('Add empty Media class to %s. Sorry about this bug.' % model_admin)
+            model_admin.__class__.Media = type('Media', (object,), dict())
+            model_admin.__class__.media = media_property(model_admin.__class__)
 
         def _get_media(obj):
             return Media(media=getattr(obj, 'Media', None))
