@@ -12,6 +12,9 @@ class Food(models.Model):
     def __str__(self):
         return self.name
 
+    def alternate_name(self):
+        return str(self.name).upper()
+
 
 class Collection(models.Model):
     name = models.CharField(max_length=100)

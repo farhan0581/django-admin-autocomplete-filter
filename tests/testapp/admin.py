@@ -1,5 +1,6 @@
 """Defines the admin interface for the test app, including inlines and filters."""
 
+from django import forms
 from django.contrib import admin
 from django.shortcuts import reverse
 from django.urls import path
@@ -62,11 +63,17 @@ class SiblingsFilter(AutocompleteFilter):
     parameter_name = 'siblings'
 
 
+class FoodChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.alternate_name()
+
+
 class FoodFilter(AutocompleteFilter):
     title = 'food (manual)'
     field_name = 'favorite_food'
     rel_model = Person
     parameter_name = 'favorite_food'
+    form_field = FoodChoiceField
 
     def get_autocomplete_url(self, request, model_admin):
         return reverse('admin:foods_that_are_favorites')
@@ -206,7 +213,7 @@ class PersonAdmin(CustomAdmin):
         ACFilter('best friend\'s best friend (auto)', 'best_friend__best_friend'),
         ACFilter('best friend\'s favorite food (auto)', 'best_friend__favorite_food'),
         ACFilter('siblings (auto)', 'siblings'),
-        ACFilter('food (auto)', 'favorite_food', viewname='admin:foods_that_are_favorites'),
+        ACFilter('food (auto)', 'favorite_food', viewname='admin:foods_that_are_favorites', label_by='alternate_name'),
         ACFilter('best friend of (auto)', 'person'),
         ACFilter('authored (auto)', 'book'),
         ACFilter('best friend of person with fav food (auto)', 'person__favorite_food'),

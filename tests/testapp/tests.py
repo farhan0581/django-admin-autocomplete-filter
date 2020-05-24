@@ -54,8 +54,8 @@ class RootTestCase(object):
         data = json.loads(response.content)
         texts = set([item['text'] for item in data['results']])
         self.assertEqual(len(texts), 2, msg=str(texts))
-        self.assertIn('spam', texts, msg=str(texts))
-        self.assertIn('toast', texts, msg=str(texts))
+        self.assertIn('SPAM', texts, msg=str(texts))
+        self.assertIn('TOAST', texts, msg=str(texts))
 
     def test_admin_changelist_search(self):
         for model_name in MODEL_NAMES:

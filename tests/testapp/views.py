@@ -8,6 +8,10 @@ from .models import Food
 class FoodsThatAreFavorites(AutocompleteJsonView):
     """List only foods that are someone's favorite."""
 
+    @staticmethod
+    def display_text(obj):
+        return obj.alternate_name()
+
     def get_queryset(self):
 
         # Get items in use
