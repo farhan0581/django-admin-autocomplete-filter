@@ -26,6 +26,7 @@ FILTER_STRINGS = (
     (Collection, 'curators', '1', 'id', (1,)),
     (Collection, 'curators', '3', 'id', ()),
     (Person, 'best_friend', '1', 'id', (2, 3)),
+    (Person, 'best_friend__best_friend', '1', 'id', (4, )),
     (Person, 'best_friend__favorite_food', '1', 'id', (4,)),
     (Person, 'siblings', '2', 'id', (1, 3, 4)),
     (Person, 'favorite_food', '3', 'id', (3, 4)),

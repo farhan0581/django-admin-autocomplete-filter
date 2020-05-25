@@ -34,6 +34,13 @@ class FriendFilter(AutocompleteFilter):
     parameter_name = 'best_friend'
 
 
+class FriendFriendFilter(AutocompleteFilter):
+    title = 'best friend\'s best friend (manual)'
+    field_name = 'best_friend'
+    rel_model = Person
+    parameter_name = 'best_friend__best_friend'
+
+
 class FriendFoodFilter(AutocompleteFilter):
     title = 'best friend\'s favorite food (manual)'
     field_name = 'favorite_food'
@@ -159,12 +166,14 @@ class PersonAdmin(CustomAdmin):
     list_display_links = ['name']
     list_filter = [
         FriendFilter,
+        FriendFriendFilter,
         FriendFoodFilter,
         SiblingsFilter,
         FoodFilter,
     ]
     list_filter_auto = [
         ACFilter('best friend (auto)', 'best_friend'),
+        ACFilter('best friend\'s best friend (auto)', 'best_friend__best_friend'),
         ACFilter('best friend\'s favorite food (auto)', 'best_friend__favorite_food'),
         ACFilter('siblings (auto)', 'siblings'),
         ACFilter('food (auto)', 'favorite_food', viewname='admin:foods_that_are_favorites'),
