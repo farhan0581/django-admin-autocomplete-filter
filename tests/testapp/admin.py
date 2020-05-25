@@ -27,6 +27,13 @@ class CuratorsFilter(AutocompleteFilter):
     parameter_name = 'curators'
 
 
+class BookFilter(AutocompleteFilter):
+    title = 'has book (manual)'
+    field_name = 'book'
+    rel_model = Collection
+    parameter_name = 'book'
+
+
 class FriendFilter(AutocompleteFilter):
     title = 'best friend (manual)'
     field_name = 'best_friend'
@@ -63,6 +70,27 @@ class FoodFilter(AutocompleteFilter):
 
     def get_autocomplete_url(self, request, model_admin):
         return reverse('admin:foods_that_are_favorites')
+
+
+class BestFriendOfFilter(AutocompleteFilter):
+    title = 'best friend of (manual)'
+    field_name = 'person'
+    rel_model = Person
+    parameter_name = 'person'
+
+
+class AuthoredFilter(AutocompleteFilter):
+    title = 'authored (manual)'
+    field_name = 'book'
+    rel_model = Person
+    parameter_name = 'book'
+
+
+class RevPersonFoodFilter(AutocompleteFilter):
+    title = 'best friend of person with fav food (manual)'
+    field_name = 'favorite_food'
+    rel_model = Person
+    parameter_name = 'person__favorite_food'
 
 
 class AuthorFilter(AutocompleteFilter):
@@ -143,10 +171,12 @@ class CollectionAdmin(CustomAdmin):
     list_display = ['id', 'name']
     list_display_links = ['name']
     list_filter = [
-        CuratorsFilter
+        CuratorsFilter,
+        BookFilter,
     ]
     list_filter_auto = [
         ACFilter('curators (auto)', 'curators'),
+        ACFilter('has book (auto)', 'book'),
     ]
     ordering = ['id']
     readonly_fields = ['id']
@@ -167,6 +197,9 @@ class PersonAdmin(CustomAdmin):
         FriendFoodFilter,
         SiblingsFilter,
         FoodFilter,
+        BestFriendOfFilter,
+        AuthoredFilter,
+        RevPersonFoodFilter,
     ]
     list_filter_auto = [
         ACFilter('best friend (auto)', 'best_friend'),
@@ -174,6 +207,10 @@ class PersonAdmin(CustomAdmin):
         ACFilter('best friend\'s favorite food (auto)', 'best_friend__favorite_food'),
         ACFilter('siblings (auto)', 'siblings'),
         ACFilter('food (auto)', 'favorite_food', viewname='admin:foods_that_are_favorites'),
+        ACFilter('best friend of (auto)', 'person'),
+        ACFilter('authored (auto)', 'book'),
+        ACFilter('best friend of person with fav food (auto)', 'person__favorite_food'),
+        # ACFilter('curated_collections (auto)', 'curated_collections'),  # does not work...
     ]
     ordering = ['id']
     readonly_fields = ['id']
