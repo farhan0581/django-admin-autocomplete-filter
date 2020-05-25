@@ -22,6 +22,7 @@ class AutocompleteFilter(admin.SimpleListFilter):
     title = ''
     field_name = ''
     field_pk = 'pk'
+    use_pk_exact = True
     is_placeholder_title = False
     widget_attrs = {}
     rel_model = None
@@ -41,8 +42,9 @@ class AutocompleteFilter(admin.SimpleListFilter):
 
     def __init__(self, request, params, model, model_admin):
         if self.parameter_name is None:
-            self.parameter_name = '{}__{}__exact'.format(self.field_name,
-                                                         self.field_pk)
+            self.parameter_name = self.field_name
+            if self.use_pk_exact:
+                self.parameter_name += '__{}__exact'.format(self.field_pk)
         super().__init__(request, params, model, model_admin)
 
         if self.rel_model:
@@ -134,7 +136,7 @@ def _get_rel_model(model, parameter_name):
         return rel_model
 
 
-def ACFilter(title, base_parameter_name, viewname=''):
+def ACFilter(title, base_parameter_name, viewname='', use_pk_exact=False):
     """
     An autocomplete widget filter with a customizable title. Use like this:
         ACFilter('My title', 'field_name')
@@ -148,9 +150,12 @@ def ACFilter(title, base_parameter_name, viewname=''):
 
         def __new__(cls, name, bases, attrs):
             super_new = super().__new__(cls, name, bases, attrs)
+            super_new.use_pk_exact = use_pk_exact
             field_names = str(base_parameter_name).split(LOOKUP_SEP)
             super_new.field_name = field_names[-1]
             super_new.parameter_name = base_parameter_name
+            if len(field_names) <= 1 and super_new.use_pk_exact:
+                super_new.parameter_name += '__{}__exact'.format(super_new.field_pk)
             return super_new
 
     class NewFilter(AutocompleteFilter, metaclass=NewMetaFilter):
