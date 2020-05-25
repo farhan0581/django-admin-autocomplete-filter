@@ -65,7 +65,7 @@ class AutocompleteFilter(admin.SimpleListFilter):
         self._add_media(model_admin, widget)
 
         attrs = self.widget_attrs.copy()
-        attrs['id'] = 'id-%s-dal-filter' % self.field_name
+        attrs['id'] = 'id-%s-dal-filter' % self.parameter_name
         if self.is_placeholder_title:
             # Upper case letter P as dirty hack for bypass django2 widget force placeholder value as empty string ("")
             attrs['data-Placeholder'] = self.title
