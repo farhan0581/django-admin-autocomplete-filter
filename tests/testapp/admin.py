@@ -106,6 +106,9 @@ class BookInline(admin.TabularInline):
 class CustomAdmin(admin.ModelAdmin):
     list_filter_auto = []
 
+    class Media:
+        css = {'all': ('custom.css',)}
+
     def get_list_filter(self, request):
         if request.user.username == BASIC_USERNAME:
             return self.list_filter

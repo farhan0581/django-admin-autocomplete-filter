@@ -58,7 +58,10 @@ class RootTestCase(object):
             with self.subTest(model_name=model_name):
                 url = reverse('admin:testapp_%s_changelist' % model_name) + '?q=a'
                 response = self.client.get(url, follow=False)
-                self.assertEqual(response.status_code, 200, msg=str(url))
+                self.assertContains(
+                    response, '/static/custom.css',
+                    html=False, msg_prefix=str(url)
+                )
 
     def test_admin_autocomplete_load(self):
         for model_name in MODEL_NAMES:
