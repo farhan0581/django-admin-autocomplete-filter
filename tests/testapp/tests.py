@@ -5,6 +5,7 @@ from django.contrib.admin.utils import flatten
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
+from tests.testapp.admin import BASIC_USERNAME, SHORTCUT_USERNAME
 from tests.testapp.models import Food, Collection, Person, Book
 
 
@@ -33,15 +34,13 @@ FILTER_STRINGS = (
 )
 
 
-class TestCase(TestCase):
+class RootTestCase(object):
     # fixtures = ['fixture.json']  # loading from data migration 0002
 
     @classmethod
     def setUpTestData(cls):
-        cls.user = User.objects.get(username='user')
-
-    def setUp(self):
-        self.client.force_login(self.user)
+        cls.basic_user = User.objects.get(username=BASIC_USERNAME)
+        cls.shortcut_user = User.objects.get(username=SHORTCUT_USERNAME)
 
     def test_endpoint(self):
         url = reverse('admin:foods_that_are_favorites')
@@ -86,3 +85,13 @@ class TestCase(TestCase):
                         response, '<td class="field-%s">%s</td>' % (field, pk),
                         html=True, msg_prefix=str(url)
                     )
+
+
+class BasicTestCase(RootTestCase, TestCase):
+    def setUp(self):
+        self.client.force_login(self.basic_user)
+
+
+class ShortcutTestCase(RootTestCase, TestCase):
+    def setUp(self):
+        self.client.force_login(self.shortcut_user)

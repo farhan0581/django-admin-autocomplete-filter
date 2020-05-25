@@ -3,9 +3,14 @@
 from django.contrib import admin
 from django.shortcuts import reverse
 from django.urls import path
-from admin_auto_filters.filters import AutocompleteFilter
+from admin_auto_filters.filters import AutocompleteFilter, ACFilter
 from .models import Food, Person, Collection, Book
 from .views import FoodsThatAreFavorites
+
+
+# hard code some user constants (must match fixture)
+BASIC_USERNAME = 'bu'  # password is 'bu'
+SHORTCUT_USERNAME = 'su'  # password is 'su'
 
 
 class PersonFoodFilter(AutocompleteFilter):
@@ -91,14 +96,29 @@ class BookInline(admin.TabularInline):
     model = Book
 
 
+class CustomAdmin(admin.ModelAdmin):
+    list_filter_auto = []
+
+    def get_list_filter(self, request):
+        if request.user.username == BASIC_USERNAME:
+            return self.list_filter
+        elif request.user.username == SHORTCUT_USERNAME:
+            return self.list_filter_auto
+        else:
+            raise ValueError('Unexpected username.')
+
+
 @admin.register(Food)
-class FoodAdmin(admin.ModelAdmin):
+class FoodAdmin(CustomAdmin):
     fields = ['id', 'name']
     inlines = [PersonInline]
     list_display = ['id', 'name']
     list_display_links = ['name']
     list_filter = [
         PersonFoodFilter,
+    ]
+    list_filter_auto = [
+        ACFilter('favorite food of person (auto)', 'person'),
     ]
     ordering = ['id']
     readonly_fields = ['id']
@@ -109,7 +129,7 @@ class FoodAdmin(admin.ModelAdmin):
 
 
 @admin.register(Collection)
-class CollectionAdmin(admin.ModelAdmin):
+class CollectionAdmin(CustomAdmin):
     autocomplete_fields = ['curators']
     fields = ['id', 'name', 'curators']
     inlines = [BookInline]
@@ -117,6 +137,9 @@ class CollectionAdmin(admin.ModelAdmin):
     list_display_links = ['name']
     list_filter = [
         CuratorsFilter
+    ]
+    list_filter_auto = [
+        ACFilter('curators (auto)', 'curators'),
     ]
     ordering = ['id']
     readonly_fields = ['id']
@@ -128,7 +151,7 @@ class CollectionAdmin(admin.ModelAdmin):
 
 
 @admin.register(Person)
-class PersonAdmin(admin.ModelAdmin):
+class PersonAdmin(CustomAdmin):
     autocomplete_fields = ['best_friend', 'siblings', 'favorite_food', 'curated_collections']
     fields = ['id', 'name', 'best_friend', 'siblings', 'favorite_food', 'curated_collections']
     inlines = [BookInline]
@@ -139,6 +162,12 @@ class PersonAdmin(admin.ModelAdmin):
         FriendFoodFilter,
         SiblingsFilter,
         FoodFilter,
+    ]
+    list_filter_auto = [
+        ACFilter('best friend (auto)', 'best_friend'),
+        ACFilter('best friend\'s favorite food (auto)', 'best_friend__favorite_food'),
+        ACFilter('siblings (auto)', 'siblings'),
+        ACFilter('food (auto)', 'favorite_food', viewname='admin:foods_that_are_favorites'),
     ]
     ordering = ['id']
     readonly_fields = ['id']
@@ -159,7 +188,7 @@ class PersonAdmin(admin.ModelAdmin):
 
 
 @admin.register(Book)
-class BookAdmin(admin.ModelAdmin):
+class BookAdmin(CustomAdmin):
     autocomplete_fields = ['author', 'coll']
     fields = ['isbn', 'title', 'author', 'coll']
     inlines = []
@@ -168,6 +197,10 @@ class BookAdmin(admin.ModelAdmin):
     list_filter = [
         AuthorFilter,
         CollectionFilter,
+    ]
+    list_filter_auto = [
+        ACFilter('author (auto)', 'author'),
+        ACFilter('collection (auto)', 'coll'),
     ]
     ordering = ['isbn']
     search_fields = ['isbn', 'title', 'author__name', 'coll__name']
