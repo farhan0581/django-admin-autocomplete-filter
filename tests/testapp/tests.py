@@ -25,6 +25,7 @@ MODEL_NAMES = tuple([name(model) for model in MODELS])
 # this must match data in fixture
 FILTER_STRINGS = (
     (Food, 'person', '3', 'id', (3,)),
+    (Food, 'people_with_this_least_fav_food', '3', 'id', (2,)),
     (Collection, 'curators', '1', 'id', (1,)),
     (Collection, 'curators', '3', 'id', ()),
     (Collection, 'book', '2357', 'id', (2, )),

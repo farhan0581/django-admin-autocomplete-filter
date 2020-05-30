@@ -21,6 +21,13 @@ class PersonFoodFilter(AutocompleteFilter):
     parameter_name = 'person'
 
 
+class PersonLeastFavFoodFilter(AutocompleteFilter):
+    title = 'least favorite food of person (manual)'
+    field_name = 'people_with_this_least_fav_food'
+    rel_model = Food
+    parameter_name = 'people_with_this_least_fav_food'
+
+
 class CuratorsFilter(AutocompleteFilter):
     title = 'curators (manual)'
     field_name = 'curators'
@@ -139,6 +146,10 @@ class PersonInline(admin.TabularInline):
     model = Person
 
 
+class PersonFavoriteFoodInline(PersonInline):
+    fk_name = 'favorite_food'
+
+
 class BookInline(admin.TabularInline):
     extra = 0
     fields = ['isbn', 'title']
@@ -163,14 +174,16 @@ class CustomAdmin(admin.ModelAdmin):
 @admin.register(Food)
 class FoodAdmin(CustomAdmin):
     fields = ['id', 'name']
-    inlines = [PersonInline]
+    inlines = [PersonFavoriteFoodInline]
     list_display = ['id', 'name']
     list_display_links = ['name']
     list_filter = [
         PersonFoodFilter,
+        PersonLeastFavFoodFilter,
     ]
     list_filter_auto = [
         AutocompleteFilterFactory('favorite food of person (auto)', 'person'),
+        AutocompleteFilterFactory('least favorite food of person (auto)', 'people_with_this_least_fav_food'),
     ]
     ordering = ['id']
     readonly_fields = ['id']

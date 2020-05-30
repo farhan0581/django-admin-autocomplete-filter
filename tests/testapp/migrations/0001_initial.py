@@ -42,6 +42,7 @@ class Migration(migrations.Migration):
                 ('curated_collections', models.ManyToManyField(blank=True, to='testapp.Collection')),
                 ('favorite_book', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='people_with_this_fav_book', to='testapp.Book')),
                 ('favorite_food', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='testapp.Food')),
+                ('least_favorite_food', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='food_is_least_fav', related_query_name='people_with_this_least_fav_food', to='testapp.Food')),
                 ('siblings', models.ManyToManyField(blank=True, related_name='_person_siblings_+', to='testapp.Person')),
             ],
         ),
