@@ -4,7 +4,7 @@ from django import forms
 from django.contrib import admin
 from django.shortcuts import reverse
 from django.urls import path
-from admin_auto_filters.filters import AutocompleteFilter, ACFilter
+from admin_auto_filters.filters import AutocompleteFilter, AutocompleteFilterFactory
 from .models import Food, Person, Collection, Book
 from .views import FoodsThatAreFavorites
 
@@ -114,6 +114,13 @@ class CollectionFilter(AutocompleteFilter):
     parameter_name = 'coll'
 
 
+class PeopleWithFavBookFilter(AutocompleteFilter):
+    title = 'people with this fav book (manual)'
+    field_name = 'people_with_this_fav_book'
+    rel_model = Book
+    parameter_name = 'people_with_this_fav_book'
+
+
 class FoodInline(admin.TabularInline):
     extra = 0
     fields = ['id', 'name']
@@ -163,7 +170,7 @@ class FoodAdmin(CustomAdmin):
         PersonFoodFilter,
     ]
     list_filter_auto = [
-        ACFilter('favorite food of person (auto)', 'person'),
+        AutocompleteFilterFactory('favorite food of person (auto)', 'person'),
     ]
     ordering = ['id']
     readonly_fields = ['id']
@@ -182,8 +189,8 @@ class CollectionAdmin(CustomAdmin):
         BookFilter,
     ]
     list_filter_auto = [
-        ACFilter('curators (auto)', 'curators'),
-        ACFilter('has book (auto)', 'book'),
+        AutocompleteFilterFactory('curators (auto)', 'curators'),
+        AutocompleteFilterFactory('has book (auto)', 'book'),
     ]
     ordering = ['id']
     readonly_fields = ['id']
@@ -209,15 +216,15 @@ class PersonAdmin(CustomAdmin):
         RevPersonFoodFilter,
     ]
     list_filter_auto = [
-        ACFilter('best friend (auto)', 'best_friend'),
-        ACFilter('best friend\'s best friend (auto)', 'best_friend__best_friend'),
-        ACFilter('best friend\'s favorite food (auto)', 'best_friend__favorite_food'),
-        ACFilter('siblings (auto)', 'siblings'),
-        ACFilter('food (auto)', 'favorite_food', viewname='admin:foods_that_are_favorites', label_by='alternate_name'),
-        ACFilter('best friend of (auto)', 'person'),
-        ACFilter('authored (auto)', 'book'),
-        ACFilter('best friend of person with fav food (auto)', 'person__favorite_food'),
-        # ACFilter('curated_collections (auto)', 'curated_collections'),  # does not work...
+        AutocompleteFilterFactory('best friend (auto)', 'best_friend'),
+        AutocompleteFilterFactory('best friend\'s best friend (auto)', 'best_friend__best_friend'),
+        AutocompleteFilterFactory('best friend\'s favorite food (auto)', 'best_friend__favorite_food'),
+        AutocompleteFilterFactory('siblings (auto)', 'siblings'),
+        AutocompleteFilterFactory('food (auto)', 'favorite_food', viewname='admin:foods_that_are_favorites', label_by='alternate_name'),
+        AutocompleteFilterFactory('best friend of (auto)', 'person'),
+        AutocompleteFilterFactory('authored (auto)', 'book'),
+        AutocompleteFilterFactory('best friend of person with fav food (auto)', 'person__favorite_food'),
+        # AutocompleteFilterFactory('curated_collections (auto)', 'curated_collections'),  # does not work...
     ]
     ordering = ['id']
     readonly_fields = ['id']
@@ -244,10 +251,12 @@ class BookAdmin(CustomAdmin):
     list_filter = [
         AuthorFilter,
         CollectionFilter,
+        PeopleWithFavBookFilter,
     ]
     list_filter_auto = [
-        ACFilter('author (auto)', 'author'),
-        ACFilter('collection (auto)', 'coll'),
+        AutocompleteFilterFactory('author (auto)', 'author'),
+        AutocompleteFilterFactory('collection (auto)', 'coll'),
+        AutocompleteFilterFactory('people with this fav book (auto)', 'people_with_this_fav_book'),
     ]
     ordering = ['isbn']
     search_fields = ['isbn', 'title', 'author__name', 'coll__name']

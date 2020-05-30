@@ -75,10 +75,11 @@ class AutocompleteFilter(admin.SimpleListFilter):
             attrs=attrs
         )
 
-    def get_queryset_for_field(self, model, name):
+    @staticmethod
+    def get_queryset_for_field(model, name):
         try:
             field_desc = getattr(model, name)
-        except:
+        except AttributeError:
             field_desc = model._meta.get_field(name)
         if isinstance(field_desc, ManyToManyDescriptor):
             related_model = field_desc.rel.related_model if field_desc.reverse else field_desc.rel.model
@@ -163,11 +164,11 @@ def _get_rel_model(model, parameter_name):
         return rel_model
 
 
-def ACFilter(title, base_parameter_name, viewname='', use_pk_exact=False, label_by=str):
+def AutocompleteFilterFactory(title, base_parameter_name, viewname='', use_pk_exact=False, label_by=str):
     """
     An autocomplete widget filter with a customizable title. Use like this:
-        ACFilter('My title', 'field_name')
-        ACFilter('My title', 'fourth__third__second__first')
+        AutocompleteFilterFactory('My title', 'field_name')
+        AutocompleteFilterFactory('My title', 'fourth__third__second__first')
     Be sure to include distinct in the model admin get_queryset() if the second form is used.
     Assumes: parameter_name == f'fourth__third__second__{field_name}'
         * title: The title for the filter.

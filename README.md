@@ -137,18 +137,18 @@ class ArtistFilter(AutocompleteFilter):
 Shortcut for creating filters:
 ------------------------------
 
-It is now possible to use the `ACFilter` shortcut to create filters
+It is now possible to use the `AutocompleteFilterFactory` shortcut to create filters
 on the fly, as shown below. Nested relations are supported, with
 no need to specify the model.
 
 ```python
 from django.contrib import admin
-from admin_auto_filters.filters import ACFilter
+from admin_auto_filters.filters import AutocompleteFilterFactory
 
 
 class AlbumAdmin(admin.ModelAdmin):
     list_filter = [
-        ACFilter('Artist', 'artist', 'admin:custom_search', True)
+        AutocompleteFilterFactory('Artist', 'artist', 'admin:custom_search', True)
     ]
 
     def get_urls(self):
@@ -178,7 +178,8 @@ class CustomSearchView(AutocompleteJsonView):
         """As above..."""
 ```
 
-In an AutocompleteFilter in your models.py, specify the form_field:
+Then use either of two options to customize the text. Option one is to
+specify the form_field in an AutocompleteFilter in your admin.py:
 
 ```python
 from django import forms
@@ -208,16 +209,17 @@ class AlbumAdmin(admin.ModelAdmin):
         """As above..."""
 ```
 
-In an ACFilter in your models.py, add a label_by argument:
+Or use option two. In an AutocompleteFilterFactory in your admin.py,
+add a *label_by* argument:
 
 ```python
 from django.contrib import admin
-from admin_auto_filters.filters import ACFilter
+from admin_auto_filters.filters import AutocompleteFilterFactory
 
 
 class AlbumAdmin(admin.ModelAdmin):
     list_filter = [
-        ACFilter('Artist', 'artist', 'admin:custom_search', True, label_by='my_str_method')
+        AutocompleteFilterFactory('Artist', 'artist', 'admin:custom_search', True, label_by='my_str_method')
     ]
 
     def get_urls(self):

@@ -33,6 +33,7 @@ class Person(models.Model):
     siblings = models.ManyToManyField('self', blank=True)
     favorite_food = models.ForeignKey(Food, on_delete=models.CASCADE, blank=True, null=True)
     curated_collections = models.ManyToManyField(Collection, blank=True, db_table=Collection.curators.field.db_table)
+    favorite_book = models.ForeignKey('Book', on_delete=models.CASCADE, blank=True, null=True, related_name='people_with_this_fav_book')
 
     def __repr__(self):
         return 'Person#' + str(self.id)

@@ -187,6 +187,7 @@
   {
     "fields": {
       "best_friend": 2,
+      "favorite_book": 1234,
       "favorite_food": 3,
       "name": "David",
       "siblings": [
