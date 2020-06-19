@@ -14,8 +14,12 @@ django.jQuery(document).ready(function () {
 
 function search_replace(name, value) {
     var new_search_hash = search_to_hash();
-    new_search_hash[decodeURIComponent(name)] = [];
-    new_search_hash[decodeURIComponent(name)].push(decodeURIComponent(value));
+    if (value) {
+      new_search_hash[decodeURIComponent(name)] = [];
+      new_search_hash[decodeURIComponent(name)].push(decodeURIComponent(value));
+    } else {
+      remove new_search_hash[decodeURIComponent(name)];
+    }
     return hash_to_search(new_search_hash);
   }
   
