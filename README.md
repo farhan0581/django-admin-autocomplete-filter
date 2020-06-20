@@ -14,11 +14,11 @@ We can use this in django admin list filter.
     
 
 Requirements:
------------
+-------------
 Requires Django version >= 2.0
 
 Installation:
-------------
+-------------
 You can install it via pip or to get the latest version clone this repo.
 
 ```shell script
@@ -28,7 +28,7 @@ pip install django-admin-autocomplete-filter
 Add `admin_auto_filters` to your `INSTALLED_APPS` inside settings.py of your project.
 
 Usage:
------
+------
 Let's say we have following models:
 ```python
 from django.db import models
@@ -78,7 +78,7 @@ After following these steps you may see the filter as:
 ![](https://raw.githubusercontent.com/farhan0581/django-admin-autocomplete-filter/master/admin_auto_filters/media/screenshot2.png)
 
 Functionality to provide custom view for search:
------------------------------------------------
+------------------------------------------------
 
 Now you can also register your custom view instead of using django admin's search_results to control the results in the autocomplete. For this you will need to create your custom view and register the url in your admin class as shown below:
 
@@ -132,6 +132,98 @@ class ArtistFilter(AutocompleteFilter):
 
     def get_autocomplete_url(self, request, model_admin):
         return reverse('admin:custom_search')
+```
+
+Shortcut for creating filters:
+------------------------------
+
+It is now possible to use the `AutocompleteFilterFactory` shortcut to create filters
+on the fly, as shown below. Nested relations are supported, with
+no need to specify the model.
+
+```python
+from django.contrib import admin
+from admin_auto_filters.filters import AutocompleteFilterFactory
+
+
+class AlbumAdmin(admin.ModelAdmin):
+    list_filter = [
+        AutocompleteFilterFactory('Artist', 'artist', 'admin:custom_search', True)
+    ]
+
+    def get_urls(self):
+        """As above..."""
+```
+
+Customizing Widget Text
+-----------------------
+
+It is also possible to customize the text displayed in the filter
+widget, to use something other than `str(obj)`. This needs to be
+configured for both the dropdown endpoint and the widget itself.
+
+In your views.py, override display_text:
+
+```python
+from admin_auto_filters.views import AutocompleteJsonView
+
+
+class CustomSearchView(AutocompleteJsonView):
+
+    @staticmethod
+    def display_text(obj):
+        return obj.my_str_method()
+
+    def get_queryset(self):
+        """As above..."""
+```
+
+Then use either of two options to customize the text. Option one is to
+specify the form_field in an AutocompleteFilter in your admin.py:
+
+```python
+from django import forms
+from django.contrib import admin
+from django.shortcuts import reverse
+from admin_auto_filters.filters import AutocompleteFilter
+
+
+class FoodChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.my_str_method()
+
+
+class ArtistFilter(AutocompleteFilter):
+    title = 'Artist'
+    field_name = 'artist'
+    form_field = FoodChoiceField
+
+    def get_autocomplete_url(self, request, model_admin):
+        return reverse('admin:custom_search')
+
+
+class AlbumAdmin(admin.ModelAdmin):
+    list_filter = [ArtistFilter]
+
+    def get_urls(self):
+        """As above..."""
+```
+
+Or use option two. In an AutocompleteFilterFactory in your admin.py,
+add a *label_by* argument:
+
+```python
+from django.contrib import admin
+from admin_auto_filters.filters import AutocompleteFilterFactory
+
+
+class AlbumAdmin(admin.ModelAdmin):
+    list_filter = [
+        AutocompleteFilterFactory('Artist', 'artist', 'admin:custom_search', True, label_by='my_str_method')
+    ]
+
+    def get_urls(self):
+        """As above..."""
 ```
 
 License:
