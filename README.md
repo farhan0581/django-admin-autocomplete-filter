@@ -226,6 +226,14 @@ class AlbumAdmin(admin.ModelAdmin):
         """As above..."""
 ```
 
+Contributing:
+------------
+This project is a combined effort of a lot of selfless developers who try to make things easier. Your contribution is most welcome.
+
+Please make a PR to the branch `pre_release` and make sure your branch does not have any conflicts and clearly mention the problems or improvements your PR is addressing.
+
+
+
 License:
 --------
 Django Admin Autocomplete Filter is an Open Source project licensed under the terms of the GNU GENERAL PUBLIC LICENSE.
