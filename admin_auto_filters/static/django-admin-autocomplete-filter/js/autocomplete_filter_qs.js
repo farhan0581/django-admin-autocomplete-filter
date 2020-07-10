@@ -18,7 +18,7 @@ function search_replace(name, value) {
       new_search_hash[decodeURIComponent(name)] = [];
       new_search_hash[decodeURIComponent(name)].push(decodeURIComponent(value));
     } else {
-      remove new_search_hash[decodeURIComponent(name)];
+      delete new_search_hash[decodeURIComponent(name)];
     }
     return hash_to_search(new_search_hash);
   }
