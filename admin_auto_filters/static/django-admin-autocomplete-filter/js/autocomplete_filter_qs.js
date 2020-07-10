@@ -1,5 +1,5 @@
 django.jQuery(document).ready(function () {
-  django.jQuery('#changelist-filter select').on(
+  django.jQuery('#changelist-filter select, #grp-filters select').on(
       'change',
       function (e, choice) {
           var val = django.jQuery(e.target).val() || '';
