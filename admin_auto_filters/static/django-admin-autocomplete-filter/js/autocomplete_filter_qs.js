@@ -1,5 +1,5 @@
 django.jQuery(document).ready(function () {
-  django.jQuery('#changelist-filter select').on(
+  django.jQuery('#changelist-filter select, #grp-filters select').on(
       'change',
       function (e, choice) {
           var val = django.jQuery(e.target).val() || '';
@@ -18,7 +18,7 @@ function search_replace(name, value) {
       new_search_hash[decodeURIComponent(name)] = [];
       new_search_hash[decodeURIComponent(name)].push(decodeURIComponent(value));
     } else {
-      remove new_search_hash[decodeURIComponent(name)];
+      delete new_search_hash[decodeURIComponent(name)];
     }
     return hash_to_search(new_search_hash);
   }
