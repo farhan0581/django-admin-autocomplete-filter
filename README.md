@@ -17,6 +17,16 @@ Requirements:
 -------------
 Requires Django version >= 2.0
 
+
+Features:
+-------------
+
+* Custom search view/endpoint ([more details](#functionality-to-provide-custom-view-for-search))
+* `list_filter` Filter Factory support ([more details](#shortcut-for-creating-filters))
+* Custom widget text ([more details](#customizing-widget-text))
+* Support for [Grapelli](https://grappelliproject.com/)
+
+
 Installation:
 -------------
 You can install it via pip or to get the latest version clone this repo.
@@ -60,14 +70,6 @@ class ArtistAdmin(admin.ModelAdmin):
 
 class AlbumAdmin(admin.ModelAdmin):
     list_filter = [ArtistFilter]
-    
-    """
-        defining this class is required for AutocompleteFilter
-        it's a bug and I am working on it.
-    """
-    class Media:
-        pass
-    
     # ...
 ```
 
@@ -107,9 +109,6 @@ from django.urls import path
 class AlbumAdmin(admin.ModelAdmin):
     list_filter = [ArtistFilter]
 
-    class Media:
-        pass
-    
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
