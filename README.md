@@ -24,7 +24,7 @@ Features:
 * Custom search view/endpoint ([more details](#functionality-to-provide-custom-view-for-search))
 * `list_filter` Filter Factory support ([more details](#shortcut-for-creating-filters))
 * Custom widget text ([more details](#customizing-widget-text))
-* Support for [Grapelli](https://grappelliproject.com/)
+* Support for [Grappelli](https://grappelliproject.com/)
 
 
 Installation:
