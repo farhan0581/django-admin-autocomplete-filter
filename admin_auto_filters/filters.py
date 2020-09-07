@@ -87,6 +87,8 @@ class AutocompleteFilter(admin.SimpleListFilter):
             related_model = field_desc.rel.related_model  # look at field_desc.related_manager_cls()?
         elif isinstance(field_desc, ManyToOneRel):
             related_model = field_desc.related_model
+        elif hasattr(field_desc, 'descriptor'):
+            return field_desc.descriptor.get_queryset()
         else:
             return field_desc.get_queryset()
         return related_model.objects.get_queryset()
