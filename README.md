@@ -1,20 +1,22 @@
 [![PyPI version](https://badge.fury.io/py/django-admin-autocomplete-filter.svg?kill_cache=1)](https://badge.fury.io/py/django-admin-autocomplete-filter)
 
+
 Django Admin Autocomplete Filter
 ================================
-A simple Django app to render list filters in django admin using autocomplete widget. This app is heavily inspired from [dal-admin-filters.](https://github.com/shamanu4/dal_admin_filters)
+A simple Django app to render list filters in django admin using an autocomplete widget. This app is heavily inspired by [dal-admin-filters.](https://github.com/shamanu4/dal_admin_filters)
+
 
 Overview:
 ---------
 
 Django comes preshipped with an admin panel which is a great utility to create quick CRUD's.
-The django 2.0 came with much needed [autocomplete_fields](https://docs.djangoproject.com/en/2.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.autocomplete_fields "autocomplete_fields") which uses select2 widget that comes with a search feature that loads the options asynchronously.
-We can use this in django admin list filter.
+Version 2.0 came with a much needed [`autocomplete_fields`](https://docs.djangoproject.com/en/2.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.autocomplete_fields "autocomplete_fields") property which uses a select2 widget to load the options asynchronously.  We leverage this in `django-admin-list-filter`.
 
     
 
 Requirements:
 -------------
+
 Requires Django version >= 2.0
 
 
@@ -29,7 +31,8 @@ Features:
 
 Installation:
 -------------
-You can install it via pip or to get the latest version clone this repo.
+
+You can install it via pip.  To get the latest version clone this repo.
 
 ```shell script
 pip install django-admin-autocomplete-filter
@@ -37,8 +40,10 @@ pip install django-admin-autocomplete-filter
 
 Add `admin_auto_filters` to your `INSTALLED_APPS` inside settings.py of your project.
 
+
 Usage:
 ------
+
 Let's say we have following models:
 ```python
 from django.db import models
@@ -51,7 +56,8 @@ class Album(models.Model):
     artist = models.ForeignKey(Artist, on_delete=models.CASCADE)
     cover = models.CharField(max_length=256, null=True, default=None)
 ```
-And you would like to filter results in Album Admin on the basis of artist, then you can define `search fields` in Artist and then define filter as:
+
+And you would like to filter results in `AlbumAdmin` on the basis of `artist`.  You need to define `search fields` in `Artist` and then define filter like this:
 
 ```python
 from django.contrib import admin
@@ -79,12 +85,13 @@ After following these steps you may see the filter as:
 
 ![](https://raw.githubusercontent.com/farhan0581/django-admin-autocomplete-filter/master/admin_auto_filters/media/screenshot2.png)
 
-Functionality to provide custom view for search:
-------------------------------------------------
 
-Now you can also register your custom view instead of using django admin's search_results to control the results in the autocomplete. For this you will need to create your custom view and register the url in your admin class as shown below:
+Functionality to provide a custom view for search:
+--------------------------------------------------
 
-In your views.py:
+You can also register your custom view instead of using Django admin's `search_results` to control the results in the autocomplete. For this you will need to create your custom view and register the URL in your admin class as shown below:
+
+In your `views.py`:
 
 ```python
 from admin_auto_filters.views import AutocompleteJsonView
@@ -99,7 +106,7 @@ class CustomSearchView(AutocompleteJsonView):
         return queryset
 ```
 
-After this, register this view in your admin class as:
+After this, register this view in your admin class:
 
 ```python
 from django.contrib import admin
@@ -118,7 +125,7 @@ class AlbumAdmin(admin.ModelAdmin):
         return custom_urls + urls
 ```
 
-Finally just tell the filter class to use this new view as:
+Finally, just tell the filter class to use this new view:
 
 ```python
 from django.shortcuts import reverse
@@ -133,11 +140,12 @@ class ArtistFilter(AutocompleteFilter):
         return reverse('admin:custom_search')
 ```
 
+
 Shortcut for creating filters:
 ------------------------------
 
-It is now possible to use the `AutocompleteFilterFactory` shortcut to create filters
-on the fly, as shown below. Nested relations are supported, with
+It's also possible to use the `AutocompleteFilterFactory` shortcut to create
+filters on the fly, as shown below. Nested relations are supported too, with
 no need to specify the model.
 
 ```python
@@ -154,14 +162,15 @@ class AlbumAdmin(admin.ModelAdmin):
         """As above..."""
 ```
 
-Customizing Widget Text
+
+Customizing widget text
 -----------------------
 
-It is also possible to customize the text displayed in the filter
-widget, to use something other than `str(obj)`. This needs to be
-configured for both the dropdown endpoint and the widget itself.
+You can customize the text displayed in the filter widget, to use something
+other than `str(obj)`. This needs to be configured for both the dropdown
+endpoint and the widget itself.
 
-In your views.py, override display_text:
+In your `views.py`, override `display_text`:
 
 ```python
 from admin_auto_filters.views import AutocompleteJsonView
@@ -177,8 +186,10 @@ class CustomSearchView(AutocompleteJsonView):
         """As above..."""
 ```
 
-Then use either of two options to customize the text. Option one is to
-specify the form_field in an AutocompleteFilter in your admin.py:
+Then use either of two options to customize the text.
+
+Option one is to specify the form_field in an AutocompleteFilter in your
+`admin.py`:
 
 ```python
 from django import forms
@@ -208,8 +219,8 @@ class AlbumAdmin(admin.ModelAdmin):
         """As above..."""
 ```
 
-Or use option two. In an AutocompleteFilterFactory in your admin.py,
-add a *label_by* argument:
+Option two is to use an AutocompleteFilterFactory in your `admin.py`
+add a `label_by` argument:
 
 ```python
 from django.contrib import admin
@@ -225,14 +236,16 @@ class AlbumAdmin(admin.ModelAdmin):
         """As above..."""
 ```
 
+
 Contributing:
 ------------
+
 This project is a combined effort of a lot of selfless developers who try to make things easier. Your contribution is most welcome.
 
-Please make a PR to the branch `pre_release` and make sure your branch does not have any conflicts and clearly mention the problems or improvements your PR is addressing.
-
+Please make a pull-request to the branch `pre_release`, make sure your branch does not have any conflicts, and clearly mention the problems or improvements your PR is addressing.
 
 
 License:
 --------
+
 Django Admin Autocomplete Filter is an Open Source project licensed under the terms of the GNU GENERAL PUBLIC LICENSE.
