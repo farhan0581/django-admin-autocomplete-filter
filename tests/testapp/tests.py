@@ -4,7 +4,7 @@ import json
 from django.contrib.admin.utils import flatten
 from django.contrib.auth.models import User
 from django.core import exceptions
-from django.test import TestCase
+from django.test import TestCase, tag
 from django.urls import reverse
 from admin_auto_filters import filters
 from tests.testapp.admin import BASIC_USERNAME, SHORTCUT_USERNAME
@@ -28,18 +28,21 @@ FILTER_STRINGS = (
     (Food, 'people_with_this_least_fav_food', '3', 'id', (2,)),
     (Collection, 'curators', '1', 'id', (1,)),
     (Collection, 'curators', '3', 'id', ()),
-    (Collection, 'book', '2357', 'id', (2, )),
+    (Collection, 'book', '2357', 'id', (2,)),
     (Person, 'best_friend', '1', 'id', (2, 3)),
-    (Person, 'best_friend__best_friend', '1', 'id', (4, )),
+    (Person, 'twin', '1', 'id', (3,)),
+    (Person, 'rev_twin', '3', 'id', (1,)),
+    (Person, 'best_friend__best_friend', '1', 'id', (4,)),
     (Person, 'best_friend__favorite_food', '1', 'id', (4,)),
     (Person, 'siblings', '2', 'id', (1, 3, 4)),
     (Person, 'favorite_food', '3', 'id', (3, 4)),
-    (Person, 'person', '3', 'id', (1, )),
-    (Person, 'book', '1111', 'id', (4, )),
+    (Person, 'person', '3', 'id', (1,)),
+    (Person, 'book', '1111', 'id', (4,)),
     (Person, 'person__favorite_food', '3', 'id', (1,2)),
-    (Book, 'author', '2', 'isbn', (42, )),
-    (Book, 'coll', '2', 'isbn', (2357, )),
-    (Book, 'people_with_this_fav_book', '4', 'isbn', (1234, )),
+    (Person, 'collection', '1', 'id', (1, 2)),
+    (Book, 'author', '2', 'isbn', (42,)),
+    (Book, 'coll', '2', 'isbn', (2357,)),
+    (Book, 'people_with_this_fav_book', '4', 'isbn', (1234,)),
 )
 
 
@@ -66,8 +69,8 @@ class RootTestCase(object):
 
     def test_admin_changelist_search(self):
         """
-        Test that the admin changelist page loads with a search query,
-        at a basic level. Need selenium tests to fully check.
+        Test that the admin changelist page loads with a search query, at a basic level.
+        Need selenium tests to fully check.
         """
         for model_name in MODEL_NAMES:
             with self.subTest(model_name=model_name):
@@ -90,12 +93,12 @@ class RootTestCase(object):
 
     def test_admin_changelist_filters(self):
         """
-        Test that the admin changelist page loads with filters applied,
-        at a basic level. Need selenium tests to fully check.
+        Test that the admin changelist page loads with filters applied, at a basic level.
+        Need selenium tests to fully check.
         """
         for model, key, val, field, pks in FILTER_STRINGS:
             model_name = name(model)
-            with self.subTest(model_name=model_name):
+            with self.subTest(model_name=model_name, key=key, val=val, field=field):
                 url = reverse('admin:testapp_%s_changelist' % model_name) + '?%s=%s' % (key, val)
                 response = self.client.get(url, follow=False)
                 # print(response.content.decode('utf-8'))
@@ -137,11 +140,13 @@ class RootTestCase(object):
             self.fail(str(e))
 
 
+@tag('basic')
 class BasicTestCase(RootTestCase, TestCase):
     def setUp(self):
         self.client.force_login(self.basic_user)
 
 
+@tag('shortcut')
 class ShortcutTestCase(RootTestCase, TestCase):
     def setUp(self):
         self.client.force_login(self.shortcut_user)

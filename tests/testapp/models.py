@@ -29,7 +29,8 @@ class Collection(models.Model):
 
 class Person(models.Model):
     name = models.CharField(max_length=100)
-    best_friend = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
+    best_friend = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)  # may not be reciprocated
+    twin = models.OneToOneField('self', on_delete=models.CASCADE, blank=True, null=True, related_name='rev_twin')
     siblings = models.ManyToManyField('self', blank=True)
     favorite_food = models.ForeignKey(Food, on_delete=models.CASCADE, blank=True, null=True)
     least_favorite_food = models.ForeignKey(Food, on_delete=models.CASCADE, blank=True, null=True,
