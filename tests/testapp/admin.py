@@ -21,6 +21,13 @@ class PersonFoodFilter(AutocompleteFilter):
     parameter_name = 'person'
 
 
+class PersonLeastFavFoodFilter(AutocompleteFilter):
+    title = 'least favorite food of person (manual)'
+    field_name = 'people_with_this_least_fav_food'
+    rel_model = Food
+    parameter_name = 'people_with_this_least_fav_food'
+
+
 class CuratorsFilter(AutocompleteFilter):
     title = 'curators (manual)'
     field_name = 'curators'
@@ -40,6 +47,20 @@ class FriendFilter(AutocompleteFilter):
     field_name = 'best_friend'
     rel_model = Person
     parameter_name = 'best_friend'
+
+
+class TwinFilter(AutocompleteFilter):
+    title = 'twin (manual)'
+    field_name = 'twin'
+    rel_model = Person
+    parameter_name = 'twin'
+
+
+class RevTwinFilter(AutocompleteFilter):
+    title = 'reverse twin (manual)'
+    field_name = 'rev_twin'
+    rel_model = Person
+    parameter_name = 'rev_twin'
 
 
 class FriendFriendFilter(AutocompleteFilter):
@@ -100,6 +121,13 @@ class RevPersonFoodFilter(AutocompleteFilter):
     parameter_name = 'person__favorite_food'
 
 
+class RevCollectionFilter(AutocompleteFilter):
+    title = 'collections as curator (manual)'
+    field_name = 'collection'
+    rel_model = Person
+    parameter_name = 'collection'
+
+
 class AuthorFilter(AutocompleteFilter):
     title = 'author (manual)'
     field_name = 'author'
@@ -139,6 +167,10 @@ class PersonInline(admin.TabularInline):
     model = Person
 
 
+class PersonFavoriteFoodInline(PersonInline):
+    fk_name = 'favorite_food'
+
+
 class BookInline(admin.TabularInline):
     extra = 0
     fields = ['isbn', 'title']
@@ -163,14 +195,16 @@ class CustomAdmin(admin.ModelAdmin):
 @admin.register(Food)
 class FoodAdmin(CustomAdmin):
     fields = ['id', 'name']
-    inlines = [PersonInline]
+    inlines = [PersonFavoriteFoodInline]
     list_display = ['id', 'name']
     list_display_links = ['name']
     list_filter = [
         PersonFoodFilter,
+        PersonLeastFavFoodFilter,
     ]
     list_filter_auto = [
         AutocompleteFilterFactory('favorite food of person (auto)', 'person'),
+        AutocompleteFilterFactory('least favorite food of person (auto)', 'people_with_this_least_fav_food'),
     ]
     ordering = ['id']
     readonly_fields = ['id']
@@ -200,13 +234,15 @@ class CollectionAdmin(CustomAdmin):
 
 @admin.register(Person)
 class PersonAdmin(CustomAdmin):
-    autocomplete_fields = ['best_friend', 'siblings', 'favorite_food', 'curated_collections']
-    fields = ['id', 'name', 'best_friend', 'siblings', 'favorite_food', 'curated_collections']
+    autocomplete_fields = ['best_friend', 'twin', 'siblings', 'favorite_food', 'curated_collections']
+    fields = ['id', 'name', 'best_friend', 'twin', 'siblings', 'favorite_food', 'curated_collections']
     inlines = [BookInline]
     list_display = ['id', 'name']
     list_display_links = ['name']
     list_filter = [
         FriendFilter,
+        TwinFilter,
+        RevTwinFilter,
         FriendFriendFilter,
         FriendFoodFilter,
         SiblingsFilter,
@@ -214,9 +250,12 @@ class PersonAdmin(CustomAdmin):
         BestFriendOfFilter,
         AuthoredFilter,
         RevPersonFoodFilter,
+        RevCollectionFilter,
     ]
     list_filter_auto = [
         AutocompleteFilterFactory('best friend (auto)', 'best_friend'),
+        AutocompleteFilterFactory('twin (auto)', 'twin'),
+        AutocompleteFilterFactory('reverse twin (auto)', 'rev_twin'),
         AutocompleteFilterFactory('best friend\'s best friend (auto)', 'best_friend__best_friend'),
         AutocompleteFilterFactory('best friend\'s favorite food (auto)', 'best_friend__favorite_food'),
         AutocompleteFilterFactory('siblings (auto)', 'siblings'),
@@ -224,6 +263,7 @@ class PersonAdmin(CustomAdmin):
         AutocompleteFilterFactory('best friend of (auto)', 'person'),
         AutocompleteFilterFactory('authored (auto)', 'book'),
         AutocompleteFilterFactory('best friend of person with fav food (auto)', 'person__favorite_food'),
+        AutocompleteFilterFactory('collections as curator (auto)', 'collection'),
         # AutocompleteFilterFactory('curated_collections (auto)', 'curated_collections'),  # does not work...
     ]
     ordering = ['id']
