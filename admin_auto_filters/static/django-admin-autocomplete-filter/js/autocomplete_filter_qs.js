@@ -63,6 +63,7 @@ function search_to_hash() {
 function hash_to_search(h) {
     var search = String("?");
     for (var k in h) {
+      if (k === '') { continue; } // ignore invalid inputs, e.g. '?&=value'
       for (var i = 0; i < h[k].length; i++) {
         search += search == "?" ? "" : "&";
         search += encodeURIComponent(k) + "=" + encodeURIComponent(h[k][i]);
