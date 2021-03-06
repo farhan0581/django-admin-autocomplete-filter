@@ -6,7 +6,7 @@ with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:
 
 setup(
     name='django-admin-autocomplete-filter',
-    version='0.5',
+    version='0.6.1',
     packages=find_packages(),
     include_package_data=True,
     description='A simple Django app to render list filters in django admin using autocomplete widget',
