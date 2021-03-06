@@ -213,7 +213,10 @@ def _get_rel_model(model, parameter_name):
         return rel_model
 
 
-def AutocompleteFilterFactory(title, base_parameter_name, viewname='', use_pk_exact=False, label_by=str):
+def AutocompleteFilterFactory(
+        title, base_parameter_name,
+        viewname='', use_pk_exact=False, label_by=str, multi_select=False,
+):
     """
     An autocomplete widget filter with a customizable title. Use like this:
         AutocompleteFilterFactory('My title', 'field_name')
@@ -226,6 +229,8 @@ def AutocompleteFilterFactory(title, base_parameter_name, viewname='', use_pk_ex
         * use_pk_exact: Whether to use '__pk__exact' in the parameter name when possible.
         * label_by: How to generate the static label for the widget - a callable, the name
           of a model callable, or the name of a model field.
+        * multi_select: Whether the filter should allow multiple selections, which if true
+          may require manual use of queryset.distinct() to remove duplicates.
     """
 
     class NewMetaFilter(type(AutocompleteFilter)):
@@ -249,6 +254,7 @@ def AutocompleteFilterFactory(title, base_parameter_name, viewname='', use_pk_ex
             self.form_field = self.generate_choice_field_for_filter(label_by)
             super().__init__(request, params, model, model_admin)
             self.title = title
+            self.multi_select = multi_select
 
         def get_autocomplete_url(self, request, model_admin):
             if viewname == '':
