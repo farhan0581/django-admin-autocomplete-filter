@@ -81,10 +81,29 @@ class AutocompleteFilter(SimpleListFilter):
         """A method to facilitate overriding."""
         return _get_rel_model(model, parameter_name)
 
-    @staticmethod
-    def generate_choice_field_for_filter(label_item):
-        """A method to facilitate overriding."""
-        return generate_choice_field(label_item)
+    @classmethod
+    def generate_choice_field(cls, label_item, form_field, request, model_admin):
+        """
+        Create a ModelChoiceField variant with a modified label_from_instance.
+        May be a ModelMultipleChoiceField if multi-select is enabled, or other custom class.
+        Note that label_item can be a callable, or a model field, or a model callable.
+        """
+
+        class LabelledModelChoiceField(form_field):
+            def label_from_instance(self, obj):
+                if callable(label_item):
+                    value = label_item(obj)
+                elif hasattr(obj, str(label_item)):
+                    attr = getattr(obj, label_item)
+                    if callable(attr):
+                        value = attr()
+                    else:
+                        value = attr
+                else:
+                    raise ValueError('Invalid label_item specified: %s' % str(label_item))
+                return value
+
+        return LabelledModelChoiceField
 
     def get_attrs(self, request, model_admin):
         """Gather the HTML tag attrs from all sources."""
@@ -224,27 +243,6 @@ class AutocompleteFilter(SimpleListFilter):
         return None
 
 
-def generate_choice_field(label_item):
-    """
-    Create a ModelChoiceField variant with a modified label_from_instance.
-    Note that label_item can be a callable, or a model field, or a model callable.
-    """
-    class LabelledModelChoiceField(ModelChoiceField):
-        def label_from_instance(self, obj):
-            if callable(label_item):
-                value = label_item(obj)
-            elif hasattr(obj, str(label_item)):
-                attr = getattr(obj, label_item)
-                if callable(attr):
-                    value = attr()
-                else:
-                    value = attr
-            else:
-                raise ValueError('Invalid label_item specified: %s' % str(label_item))
-            return value
-    return LabelledModelChoiceField
-
-
 def _get_rel_model(model, parameter_name):
     """
     A way to calculate the model for a parameter_name that includes LOOKUP_SEP.
@@ -297,7 +295,8 @@ def AutocompleteFilterFactory(
 
         def __init__(self, request, params, model, model_admin):
             self.rel_model = self._get_rel_model_for_filter(model, base_parameter_name)
-            self.form_field = self.generate_choice_field_for_filter(label_by)
+            form_field = self.get_form_field(request, model_admin)
+            self.form_field = self.generate_choice_field(label_by, form_field, request, model_admin)
             super().__init__(request, params, model, model_admin)
             self.title = title
             self.multi_select = multi_select
