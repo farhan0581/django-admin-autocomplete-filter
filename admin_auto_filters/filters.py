@@ -1,4 +1,6 @@
-from django.contrib import admin
+"""Defines autocomplete filters and helper functions for the admin."""
+
+from django.contrib.admin import SimpleListFilter
 from django.contrib.admin.utils import prepare_lookup_value
 from django.contrib.admin.widgets import (
     AutocompleteSelect as BaseAutocompleteSelect,
@@ -6,7 +8,9 @@ from django.contrib.admin.widgets import (
 )
 from django.db.models import ForeignObjectRel
 from django.db.models.constants import LOOKUP_SEP  # this is '__'
-from django.db.models.fields.related_descriptors import ReverseManyToOneDescriptor, ManyToManyDescriptor
+from django.db.models.fields.related_descriptors import (
+    ReverseManyToOneDescriptor, ManyToManyDescriptor,
+)
 from django.forms import ModelChoiceField, ModelMultipleChoiceField
 from django.forms.widgets import Media, MEDIA_TYPES, media_property
 from django.shortcuts import reverse
@@ -34,7 +38,7 @@ class AutocompleteSelectMultiple(BaseAutocompleteSelectMultiple):
         return self.custom_url if self.custom_url else super().get_url()
 
 
-class AutocompleteFilter(admin.SimpleListFilter):
+class AutocompleteFilter(SimpleListFilter):
     template = 'django-admin-autocomplete-filter/autocomplete-filter.html'
     title = ''
     field_name = ''
@@ -83,6 +87,7 @@ class AutocompleteFilter(admin.SimpleListFilter):
         return generate_choice_field(label_item)
 
     def get_attrs(self, request, model_admin):
+        """Gather the HTML tag attrs from all sources."""
         attrs = self.widget_attrs.copy()
         attrs['id'] = 'id-%s-daaf-filter' % self.parameter_name
         if self.is_placeholder_title:
@@ -92,6 +97,7 @@ class AutocompleteFilter(admin.SimpleListFilter):
 
     @staticmethod
     def get_queryset_for_field(model, name):
+        """Determine the appropriate queryset for the filter itself."""
         try:
             field_desc = getattr(model, name)
         except AttributeError:
@@ -147,6 +153,7 @@ class AutocompleteFilter(admin.SimpleListFilter):
         )
 
     def _add_media(self, model_admin, widget):
+        """Update the relevant ModelAdmin Media class, creating it if needed."""
 
         if not hasattr(model_admin, 'Media'):
             model_admin.__class__.Media = type('Media', (object,), dict())
@@ -161,9 +168,11 @@ class AutocompleteFilter(admin.SimpleListFilter):
             setattr(model_admin.Media, name, getattr(media, '_' + name))
 
     def has_output(self):
+        """Indicate that some choices will be output for this filter."""
         return True
 
     def lookups(self, request, model_admin):
+        """Values for rendering. Not used by Select2 widget."""
         return ()
 
     def prepare_value(self):
