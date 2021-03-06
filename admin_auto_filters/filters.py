@@ -1,4 +1,3 @@
-from django import forms
 from django.contrib import admin
 from django.contrib.admin.widgets import (
     AutocompleteSelect as BaseAutocompleteSelect,
@@ -45,6 +44,7 @@ class AutocompleteFilter(admin.SimpleListFilter):
     rel_model = None
     parameter_name = None
     form_field = None
+    form_widget = None
     multi_select = False
 
     class Media:
@@ -70,9 +70,12 @@ class AutocompleteFilter(admin.SimpleListFilter):
 
         remote_field = model._meta.get_field(self.field_name).remote_field
 
-        widget = AutocompleteSelect(remote_field,
-                                    model_admin.admin_site,
-                                    custom_url=self.get_autocomplete_url(request, model_admin),)
+        form_widget = self.get_form_widget(request, model_admin)
+        widget = form_widget(
+            remote_field,
+            model_admin.admin_site,
+            custom_url=self.get_autocomplete_url(request, model_admin),
+        )
         form_field = self.get_form_field(request, model_admin)
         field = form_field(
             queryset=self.get_queryset_for_field(model, self.field_name),
@@ -123,6 +126,14 @@ class AutocompleteFilter(admin.SimpleListFilter):
             return field_desc.get_queryset()
         return related_model.objects.get_queryset()
 
+    def get_form_widget(self, request, model_admin):
+        """Determine the form widget class to be used."""
+        if self.form_widget is not None:
+            return self.form_widget
+        elif self.multi_select:
+            return AutocompleteSelectMultiple
+        else:
+            return AutocompleteSelect
 
     def get_form_field(self, request, model_admin):
         """Determine the form field class to be used."""
@@ -172,7 +183,7 @@ def generate_choice_field(label_item):
     Create a ModelChoiceField variant with a modified label_from_instance.
     Note that label_item can be a callable, or a model field, or a model callable.
     """
-    class LabelledModelChoiceField(forms.ModelChoiceField):
+    class LabelledModelChoiceField(ModelChoiceField):
         def label_from_instance(self, obj):
             if callable(label_item):
                 value = label_item(obj)
