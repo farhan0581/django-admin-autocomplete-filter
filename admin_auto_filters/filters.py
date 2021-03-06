@@ -111,7 +111,7 @@ class AutocompleteFilter(admin.SimpleListFilter):
         media = _get_media(model_admin) + widget.media + _get_media(AutocompleteFilter) + _get_media(self)
 
         for name in MEDIA_TYPES:
-            setattr(model_admin.Media, name, getattr(media, "_" + name))
+            setattr(model_admin.Media, name, getattr(media, '_' + name))
 
     def has_output(self):
         return True
@@ -126,10 +126,10 @@ class AutocompleteFilter(admin.SimpleListFilter):
             return queryset
     
     def get_autocomplete_url(self, request, model_admin):
-        '''
-            Hook to specify your custom view for autocomplete,
-            instead of default django admin's search_results.
-        '''
+        """
+        Hook to specify your custom view for autocomplete,
+        instead of default django admin's search_results.
+        """
         return None
 
 

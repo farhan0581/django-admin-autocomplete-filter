@@ -5,8 +5,7 @@ django.jQuery(document).ready(function () {
           var val = django.jQuery(e.target).val() || '';
           var class_name = this.className;
           var param = this.name;
-          if (class_name.includes('admin-autocomplete'))
-          {
+          if (class_name.includes('admin-autocomplete')) {
               window.location.search = search_replace(param, val);
           }
       });
@@ -21,17 +20,18 @@ function search_replace(name, value) {
       delete new_search_hash[decodeURIComponent(name)];
     }
     return hash_to_search(new_search_hash);
-  }
+}
   
-  function search_add(name, value) {
+function search_add(name, value) {
     var new_search_hash = search_to_hash();
     if ( ! (decodeURIComponent(name) in new_search_hash)) {
       new_search_hash[decodeURIComponent(name)] = [];
     }
     new_search_hash[decodeURIComponent(name)].push(decodeURIComponent(value));
     return hash_to_search(new_search_hash);
-  }
-  // pduey: remove a variable/value pair from the current query string and return updated href
+}
+
+// pduey: remove a variable/value pair from the current query string and return updated href
 function search_remove(name, value) {
     var new_search_hash = search_to_hash();
     if (new_search_hash[name].indexOf(value) >= 0) {
