@@ -1,18 +1,35 @@
-from django.contrib.admin.widgets import AutocompleteSelect as Base
 from django import forms
 from django.contrib import admin
+from django.contrib.admin.widgets import (
+    AutocompleteSelect as BaseAutocompleteSelect,
+    AutocompleteSelectMultiple as BaseAutocompleteSelectMultiple,
+)
 from django.db.models import ForeignObjectRel
 from django.db.models.constants import LOOKUP_SEP  # this is '__'
 from django.db.models.fields.related_descriptors import ReverseManyToOneDescriptor, ManyToManyDescriptor
+from django.forms import ModelChoiceField, ModelMultipleChoiceField
 from django.forms.widgets import Media, MEDIA_TYPES, media_property
 from django.shortcuts import reverse
 
 
-class AutocompleteSelect(Base):
+class AutocompleteSelect(BaseAutocompleteSelect):
+    """A customize AutocompleteSelect that allows a custom URL."""
+
     def __init__(self, rel, admin_site, attrs=None, choices=(), using=None, custom_url=None):
         self.custom_url = custom_url
         super().__init__(rel, admin_site, attrs, choices, using)
     
+    def get_url(self):
+        return self.custom_url if self.custom_url else super().get_url()
+
+
+class AutocompleteSelectMultiple(BaseAutocompleteSelectMultiple):
+    """A customize AutocompleteSelectMultiple that allows a custom URL."""
+
+    def __init__(self, rel, admin_site, attrs=None, choices=(), using=None, custom_url=None):
+        self.custom_url = custom_url
+        super().__init__(rel, admin_site, attrs, choices, using)
+
     def get_url(self):
         return self.custom_url if self.custom_url else super().get_url()
 
@@ -27,7 +44,8 @@ class AutocompleteFilter(admin.SimpleListFilter):
     widget_attrs = {}
     rel_model = None
     parameter_name = None
-    form_field = forms.ModelChoiceField
+    form_field = None
+    multi_select = False
 
     class Media:
         js = (
@@ -55,7 +73,7 @@ class AutocompleteFilter(admin.SimpleListFilter):
         widget = AutocompleteSelect(remote_field,
                                     model_admin.admin_site,
                                     custom_url=self.get_autocomplete_url(request, model_admin),)
-        form_field = self.get_form_field()
+        form_field = self.get_form_field(request, model_admin)
         field = form_field(
             queryset=self.get_queryset_for_field(model, self.field_name),
             widget=widget,
@@ -105,9 +123,15 @@ class AutocompleteFilter(admin.SimpleListFilter):
             return field_desc.get_queryset()
         return related_model.objects.get_queryset()
 
-    def get_form_field(self):
-        """Return the type of form field to be used."""
-        return self.form_field
+
+    def get_form_field(self, request, model_admin):
+        """Determine the form field class to be used."""
+        if self.form_field is not None:
+            return self.form_field
+        elif self.multi_select:
+            return ModelMultipleChoiceField
+        else:
+            return ModelChoiceField
 
     def _add_media(self, model_admin, widget):
 
