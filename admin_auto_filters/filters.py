@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.admin.utils import prepare_lookup_value
 from django.contrib.admin.widgets import (
     AutocompleteSelect as BaseAutocompleteSelect,
     AutocompleteSelectMultiple as BaseAutocompleteSelectMultiple,
@@ -59,10 +60,7 @@ class AutocompleteFilter(admin.SimpleListFilter):
         }
 
     def __init__(self, request, params, model, model_admin):
-        if self.parameter_name is None:
-            self.parameter_name = self.field_name
-            if self.use_pk_exact:
-                self.parameter_name += '__{}__exact'.format(self.field_pk)
+        self.set_parameter_name(request, model_admin)
         super().__init__(request, params, model, model_admin)
 
         # Instance vars not used, to make argument passing explicit
@@ -168,20 +166,46 @@ class AutocompleteFilter(admin.SimpleListFilter):
     def lookups(self, request, model_admin):
         return ()
 
+    def prepare_value(self):
+        """Prepare the input string value for use."""
+        params = self.used_parameters.get(self.parameter_name, '')
+        return prepare_lookup_value(self.parameter_name, params)
+
     def queryset(self, request, queryset):
-        if self.value():
-            return queryset.filter(**{self.parameter_name: self.value()})
+        """
+        Apply filter to the queryset. Note that distinct() is NOT automatically
+        applied, which may result in duplicate values unless applied elsewhere.
+        """
+        value = self.value()
+        if value:
+            prepared_value = prepare_lookup_value(self.parameter_name, value)
+            return queryset.filter(**{self.parameter_name: prepared_value})
         else:
             return queryset
 
     def render_widget(self, field, attrs):
         """Render the widget."""
+        prepared_value = self.prepare_value()
         # FIXME check that value is okay before using, make e=1 if not?
         return field.widget.render(
             name=self.parameter_name,
-            value=self.value(),
+            value=prepared_value,
             attrs=attrs
         )
+
+    def set_parameter_name(self, request, model_admin):
+        """Set the value of self.parameter_name based on class variables."""
+        if self.parameter_name is None:
+            if self.multi_select:
+                if self.use_pk_exact:  # note that "exact" is a misnomer here
+                    self.parameter_name += '__{}__in'.format(self.field_pk)
+                else:
+                    self.parameter_name += '__in'.format(self.field_pk)
+            else:
+                if self.use_pk_exact:
+                    self.parameter_name += '__{}__exact'.format(self.field_pk)
+                else:
+                    self.parameter_name = self.field_name
 
     def get_autocomplete_url(self, request, model_admin):
         """
