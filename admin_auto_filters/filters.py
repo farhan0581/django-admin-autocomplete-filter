@@ -51,6 +51,7 @@ class AutocompleteFilter(SimpleListFilter):
     form_field = None
     form_widget = None
     multi_select = False
+    view_name = None
 
     class Media:
         js = (
@@ -237,9 +238,11 @@ class AutocompleteFilter(SimpleListFilter):
 
     def get_autocomplete_url(self, request, model_admin):
         """
-        Hook to specify your custom view for autocomplete,
+        Hook to specify a custom view for autocomplete,
         instead of default django admin's search_results.
         """
+        if self.view_name is not None:
+            return reverse(self.view_name)
         return None
 
 
