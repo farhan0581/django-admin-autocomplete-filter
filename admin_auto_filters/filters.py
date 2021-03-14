@@ -59,6 +59,9 @@ class AutocompleteFilterMeta(type(SimpleListFilter)):
 
 
 class AutocompleteFilter(SimpleListFilter, metaclass=AutocompleteFilterMeta):
+
+    # ########## Basic configuration ########## #
+
     template = 'django-admin-autocomplete-filter/autocomplete-filter.html'  # overrides SimpleListFilter
     # title =  # Default set in metaclass; can override by setting in subclass body
     field_name = None
@@ -104,6 +107,9 @@ class AutocompleteFilter(SimpleListFilter, metaclass=AutocompleteFilterMeta):
         attrs = self.get_attrs(request, model_admin)
         self.rendered_widget = self.render_widget(field, attrs)
 
+    # ########## Class "properties" ########## #
+    # We could use @django.utils.functional.classproperty form Django 3.1, or similar
+
     @classmethod
     def get_parameter_name(cls):
         """
@@ -147,6 +153,8 @@ class AutocompleteFilter(SimpleListFilter, metaclass=AutocompleteFilterMeta):
     def get_ultimate_field_name(cls):
         """Get the name of the ultimate field based on class variables."""
         return str(cls.field_name).split(LOOKUP_SEP)[-1]
+
+    # ########## Other methods ########## #
 
     @classmethod
     def check_field_name(cls):
