@@ -89,7 +89,8 @@ class AutocompleteFilter(SimpleListFilter, metaclass=AutocompleteFilterMeta):
 
         # Instance vars not used, to make argument passing explicit
         model_used = self.rel_model if self.rel_model else model
-        remote_field = model_used._meta.get_field(self.field_name).remote_field
+        ultimate_field_name = self.get_ultimate_field_name()
+        remote_field = self.rel_model._meta.get_field(ultimate_field_name).remote_field
         widget = self.get_widget(request, model_admin, remote_field)
         field = self.get_field(request, model_admin, model_used, widget)
         self._add_media(model_admin, widget)
@@ -108,6 +109,11 @@ class AutocompleteFilter(SimpleListFilter, metaclass=AutocompleteFilterMeta):
             return str(cls.field_name).replace('__', ' - ').replace('_', ' ').title()
         else:
             return cls.title
+
+    @classmethod
+    def get_ultimate_field_name(cls):
+        """Get the name of the ultimate field based on class variables."""
+        return str(cls.field_name).split(LOOKUP_SEP)[-1]
 
     @classmethod
     def generate_choice_field(cls, label_item, form_field, request, model_admin):
@@ -199,7 +205,7 @@ class AutocompleteFilter(SimpleListFilter, metaclass=AutocompleteFilterMeta):
         """Create the form field to be used."""
         form_field_class = self.get_form_field(request, model_admin)
         return form_field_class(
-            queryset=self.get_queryset_for_field(model, self.field_name),
+            queryset=self.get_queryset_for_field(model, self.get_ultimate_field_name()),
             widget=widget,
             required=False,
         )
