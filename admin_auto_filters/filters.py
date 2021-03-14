@@ -7,6 +7,7 @@ from django.contrib.admin.widgets import (
     AutocompleteSelect as BaseAutocompleteSelect,
     AutocompleteSelectMultiple as BaseAutocompleteSelectMultiple,
 )
+from django.core.exceptions import ImproperlyConfigured
 from django.db.models import ForeignObjectRel
 from django.db.models.constants import LOOKUP_SEP  # this is '__'
 from django.db.models.fields.related_descriptors import (
@@ -84,11 +85,14 @@ class AutocompleteFilter(SimpleListFilter, metaclass=AutocompleteFilterMeta):
         }
 
     def __init__(self, request, params, model, model_admin):
-        super().__init__(request, params, model, model_admin)
 
         # Check configuration
+        self.check_field_name()
         if hasattr(self, 'rel_model'):
             warnings.warn('The rel_model attribute is no longer used.', DeprecationWarning)
+
+        # Init via parent class (after checking field_name)
+        super().__init__(request, params, model, model_admin)
 
         # Instance vars not used, to make argument passing explicit
         rel_model = self.get_rel_model(model)
@@ -143,6 +147,18 @@ class AutocompleteFilter(SimpleListFilter, metaclass=AutocompleteFilterMeta):
     def get_ultimate_field_name(cls):
         """Get the name of the ultimate field based on class variables."""
         return str(cls.field_name).split(LOOKUP_SEP)[-1]
+
+    @classmethod
+    def check_field_name(cls):
+        """
+        Check that field_name has been defined.
+        Don't call this at AutocompleteFilter creation time - would need to be on subclasses.
+        """
+        if not hasattr(cls, 'field_name') or cls.field_name is None or cls.field_name == '':
+            raise ImproperlyConfigured(
+                "The list filter '%s' does not specify a 'field_name'."
+                % cls.__name__
+            )
 
     @classmethod
     def get_rel_model(cls, model):
