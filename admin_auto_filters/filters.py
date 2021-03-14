@@ -22,10 +22,12 @@ class AutocompleteSelect(BaseAutocompleteSelect):
     """A customize AutocompleteSelect that allows a custom URL."""
 
     def __init__(self, rel, admin_site, attrs=None, choices=(), using=None, custom_url=None):
+        """Initialize class variables for an AutocompleteSelect object."""
         self.custom_url = custom_url
         super().__init__(rel, admin_site, attrs, choices, using)
     
     def get_url(self):
+        """Specifies the URL to be used to fetch the autocomplete list."""
         return self.custom_url if self.custom_url else super().get_url()
 
 
@@ -33,10 +35,12 @@ class AutocompleteSelectMultiple(BaseAutocompleteSelectMultiple):
     """A customize AutocompleteSelectMultiple that allows a custom URL."""
 
     def __init__(self, rel, admin_site, attrs=None, choices=(), using=None, custom_url=None):
+        """Initialize class variables for an AutocompleteSelectMultiple object."""
         self.custom_url = custom_url
         super().__init__(rel, admin_site, attrs, choices, using)
 
     def get_url(self):
+        """Specifies the URL to be used to fetch the autocomplete list."""
         return self.custom_url if self.custom_url else super().get_url()
 
 
@@ -59,6 +63,34 @@ class AutocompleteFilterMeta(type(SimpleListFilter)):
 
 
 class AutocompleteFilter(SimpleListFilter, metaclass=AutocompleteFilterMeta):
+    """
+    An admin changelist filter that uses a Select2 autocomplete widget.
+    Class variables:
+        * field_name (str): The name of the target field to filter on, relative
+            to the admin model, using '__' as needed.
+        * field_pk (str): The name of the primary key to be used for the target
+            in the query parameter.
+        * form_field (obj): The form field class for the filter, typically a
+            child of ModelChoiceField.
+        * form_widget (obj): The for widget class for the filter, typically a
+            child of the local version of AutocompleteSelect*.
+        * is_placeholder_title (bool): A flag for overriding an HTML parameter
+            with the filter title.
+        * label_by (str, func): How to generate the static label for the widget:
+            a callable, the name of a model callable, or the name of a model field.
+            (Defaults to str.)
+        * multi_select (bool): Whether the filter should allow multiple selections,
+            which if true may require manual use of queryset.distinct() to remove
+            duplicates.
+        * parameter_name (str): The name of the GET parameter to be used.
+        * template (str): The template to be used to render the filter widget.
+        * title (str): The title at the top of the filter widget.
+        * use_pk_exact (bool): Whether to use '__pk__exact' or '__pk__in' in the
+            query parameter when possible.
+        * view_name (str): The name of the custom AutocompleteJsonView URL to use,
+            if any.
+        * widget_attrs (dict): Any custom attrs to pass to the widget HTML.
+    """
 
     # ########## Basic configuration ########## #
 
@@ -77,6 +109,10 @@ class AutocompleteFilter(SimpleListFilter, metaclass=AutocompleteFilterMeta):
     label_by = None
 
     class Media:
+        """
+        A class for defining static files to be loaded on pages using
+        this filter.
+        """
         js = (
             'admin/js/jquery.init.js',
             'django-admin-autocomplete-filter/js/autocomplete_filter_qs.js',
@@ -88,6 +124,7 @@ class AutocompleteFilter(SimpleListFilter, metaclass=AutocompleteFilterMeta):
         }
 
     def __init__(self, request, params, model, model_admin):
+        """Initialize class variables for an AutocompleteFilter object."""
 
         # Check configuration
         self.check_field_name()
