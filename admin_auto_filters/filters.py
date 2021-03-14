@@ -71,6 +71,7 @@ class AutocompleteFilter(SimpleListFilter, metaclass=AutocompleteFilterMeta):
     form_widget = None
     multi_select = False
     view_name = None
+    label_by = None
 
     class Media:
         js = (
@@ -183,11 +184,16 @@ class AutocompleteFilter(SimpleListFilter, metaclass=AutocompleteFilterMeta):
     def get_form_field(self, request, model_admin):
         """Determine the form field class to be used."""
         if self.form_field is not None:
-            return self.form_field
+            form_field = self.form_field
         elif self.multi_select:
-            return ModelMultipleChoiceField
+            form_field = ModelMultipleChoiceField
         else:
-            return ModelChoiceField
+            form_field = ModelChoiceField
+        if self.label_by is not None:
+            form_field = self.generate_choice_field(
+                self.label_by, form_field, request, model_admin
+            )
+        return form_field
 
     def get_field(self, request, model_admin, model, widget):
         """Create the form field to be used."""
