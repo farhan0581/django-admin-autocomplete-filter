@@ -100,6 +100,36 @@ class AutocompleteFilter(SimpleListFilter, metaclass=AutocompleteFilterMeta):
         attrs = self.get_attrs(request, model_admin)
         self.rendered_widget = self.render_widget(field, attrs)
 
+    @classmethod
+    def get_parameter_name(cls):
+        """
+        Get the parameter_name based on class variables, used for HTTP GET parameter.
+        Note that you would need to override BaseModelAdmin.lookup_allowed()
+        to get custom remote field GET parameter strings.
+        """
+        if cls.parameter_name is None:
+            if LOOKUP_SEP not in cls.field_name:
+                return cls.get_query_parameter()
+            else:
+                return cls.field_name
+        else:
+            return cls.parameter_name
+
+    @classmethod
+    def get_query_parameter(cls):
+        """Get the query parameter based on class variables."""
+        query_parameter = cls.field_name
+        if cls.multi_select:
+            if cls.use_pk_exact:  # note that "exact" is a misnomer here
+                query_parameter += '__{}__in'.format(cls.field_pk)
+            else:
+                query_parameter += '__in'.format(cls.field_pk)
+        else:
+            if cls.use_pk_exact:
+                query_parameter += '__{}__exact'.format(cls.field_pk)
+            else:
+                pass
+        return query_parameter
 
     @classmethod
     def get_title(cls):
@@ -248,8 +278,9 @@ class AutocompleteFilter(SimpleListFilter, metaclass=AutocompleteFilterMeta):
 
     def prepare_value(self):
         """Prepare the input string value for use."""
+        query_parameter = self.get_query_parameter()
         params = self.used_parameters.get(self.parameter_name, '')
-        return prepare_lookup_value(self.parameter_name, params)
+        return prepare_lookup_value(query_parameter, params)
 
     def queryset(self, request, queryset):
         """
@@ -258,8 +289,9 @@ class AutocompleteFilter(SimpleListFilter, metaclass=AutocompleteFilterMeta):
         """
         value = self.value()
         if value:
-            prepared_value = prepare_lookup_value(self.parameter_name, value)
-            return queryset.filter(**{self.parameter_name: prepared_value})
+            query_parameter = self.get_query_parameter()
+            prepared_value = prepare_lookup_value(query_parameter, value)  # FIXME combine with value() and prepare_value() ?
+            return queryset.filter(**{query_parameter: prepared_value})
         else:
             return queryset
 
@@ -272,20 +304,6 @@ class AutocompleteFilter(SimpleListFilter, metaclass=AutocompleteFilterMeta):
             value=prepared_value,
             attrs=attrs
         )
-
-    def set_parameter_name(self, request, model_admin):
-        """Set the value of self.parameter_name based on class variables."""
-        if self.parameter_name is None:
-            if self.multi_select:
-                if self.use_pk_exact:  # note that "exact" is a misnomer here
-                    self.parameter_name += '__{}__in'.format(self.field_pk)
-                else:
-                    self.parameter_name += '__in'.format(self.field_pk)
-            else:
-                if self.use_pk_exact:
-                    self.parameter_name += '__{}__exact'.format(self.field_pk)
-                else:
-                    self.parameter_name = self.field_name
 
     def get_autocomplete_url(self, request, model_admin):
         """
