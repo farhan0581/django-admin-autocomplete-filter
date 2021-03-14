@@ -38,16 +38,34 @@ class AutocompleteSelectMultiple(BaseAutocompleteSelectMultiple):
         return self.custom_url if self.custom_url else super().get_url()
 
 
-class AutocompleteFilter(SimpleListFilter):
-    template = 'django-admin-autocomplete-filter/autocomplete-filter.html'
-    title = ''
-    field_name = ''
+class AutocompleteFilterMeta(type(SimpleListFilter)):
+    """
+    A metaclass for setting class-level variables expected by SimpleListFilter.
+    When Python 3.5 support is no longer required, this could possibly be
+    replaced by a parent class using __init_subclass__, rather than a metaclass.
+    """
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize class variables for class `self`, for
+        subclasses of AutocompleteFilter.
+        """
+        super().__init__(*args, **kwargs)
+        if self.field_name is not None:
+            self.parameter_name = self.get_parameter_name()
+            # self.template =  # Default set in class body
+            self.title = self.get_title()
+
+
+class AutocompleteFilter(SimpleListFilter, metaclass=AutocompleteFilterMeta):
+    template = 'django-admin-autocomplete-filter/autocomplete-filter.html'  # overrides SimpleListFilter
+    # title =  # Default set in metaclass; can override by setting in subclass body
+    field_name = None
     field_pk = 'pk'
     use_pk_exact = True
     is_placeholder_title = False
     widget_attrs = {}
     rel_model = None
-    parameter_name = None
+    # parameter_name =  # Default set in metaclass; can override by setting in subclass body
     form_field = None
     form_widget = None
     multi_select = False
@@ -65,7 +83,6 @@ class AutocompleteFilter(SimpleListFilter):
         }
 
     def __init__(self, request, params, model, model_admin):
-        self.set_parameter_name(request, model_admin)
         super().__init__(request, params, model, model_admin)
 
         # Instance vars not used, to make argument passing explicit
@@ -81,6 +98,14 @@ class AutocompleteFilter(SimpleListFilter):
     def _get_rel_model_for_filter(model, parameter_name):
         """A method to facilitate overriding."""
         return _get_rel_model(model, parameter_name)
+
+    @classmethod
+    def get_title(cls):
+        """Get the title based on class variables."""
+        if cls.title is None:
+            return str(cls.field_name).replace('__', ' - ').replace('_', ' ').title()
+        else:
+            return cls.title
 
     @classmethod
     def generate_choice_field(cls, label_item, form_field, request, model_admin):
