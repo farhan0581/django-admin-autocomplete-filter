@@ -1,4 +1,4 @@
-"""Define tests for the test app."""
+"""Test page loads for the test app."""
 
 import json
 from django.contrib.admin.utils import flatten
@@ -47,6 +47,8 @@ FILTER_STRINGS = (
 
 
 class RootTestCase(object):
+    """Shared methods for testing admin page loads."""
+
     # fixtures = ['fixture.json']  # loading from data migration 0002
 
     @classmethod
@@ -142,11 +144,13 @@ class RootTestCase(object):
 
 @tag('basic')
 class BasicTestCase(RootTestCase, TestCase):
+    """A test case for direct filter definitions."""
     def setUp(self):
         self.client.force_login(self.basic_user)
 
 
 @tag('shortcut')
 class ShortcutTestCase(RootTestCase, TestCase):
+    """A test case for filter definition via factory."""
     def setUp(self):
         self.client.force_login(self.shortcut_user)
