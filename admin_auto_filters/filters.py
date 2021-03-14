@@ -65,7 +65,6 @@ class AutocompleteFilter(SimpleListFilter, metaclass=AutocompleteFilterMeta):
     use_pk_exact = True
     is_placeholder_title = False
     widget_attrs = {}
-    rel_model = None
     # parameter_name =  # Default set in metaclass; can override by setting in subclass body
     form_field = None
     form_widget = None
@@ -87,20 +86,20 @@ class AutocompleteFilter(SimpleListFilter, metaclass=AutocompleteFilterMeta):
     def __init__(self, request, params, model, model_admin):
         super().__init__(request, params, model, model_admin)
 
+        # Check configuration
+        if hasattr(self, 'rel_model'):
+            warnings.warn('The rel_model attribute is no longer used.', DeprecationWarning)
+
         # Instance vars not used, to make argument passing explicit
-        model_used = self.rel_model if self.rel_model else model
+        rel_model = self.get_rel_model(model)
         ultimate_field_name = self.get_ultimate_field_name()
-        remote_field = self.rel_model._meta.get_field(ultimate_field_name).remote_field
+        remote_field = rel_model._meta.get_field(ultimate_field_name).remote_field
         widget = self.get_widget(request, model_admin, remote_field)
-        field = self.get_field(request, model_admin, model_used, widget)
+        field = self.get_field(request, model_admin, rel_model, widget)
         self._add_media(model_admin, widget)
         attrs = self.get_attrs(request, model_admin)
         self.rendered_widget = self.render_widget(field, attrs)
 
-    @staticmethod
-    def _get_rel_model_for_filter(model, parameter_name):
-        """A method to facilitate overriding."""
-        return _get_rel_model(model, parameter_name)
 
     @classmethod
     def get_title(cls):
@@ -114,6 +113,20 @@ class AutocompleteFilter(SimpleListFilter, metaclass=AutocompleteFilterMeta):
     def get_ultimate_field_name(cls):
         """Get the name of the ultimate field based on class variables."""
         return str(cls.field_name).split(LOOKUP_SEP)[-1]
+
+    @classmethod
+    def get_rel_model(cls, model):
+        """
+        A way to calculate the model for a field_name that includes LOOKUP_SEP.
+        """
+        field_names = str(cls.field_name).split(LOOKUP_SEP)
+        if len(field_names) == 1:
+            return model
+        else:
+            rel_model = model
+            for name in field_names[:-1]:
+                rel_model = rel_model._meta.get_field(name).related_model
+            return rel_model
 
     @classmethod
     def generate_choice_field(cls, label_item, form_field, request, model_admin):
@@ -282,20 +295,6 @@ class AutocompleteFilter(SimpleListFilter, metaclass=AutocompleteFilterMeta):
         if self.view_name is not None:
             return reverse(self.view_name)
         return None
-
-
-def _get_rel_model(model, parameter_name):
-    """
-    A way to calculate the model for a parameter_name that includes LOOKUP_SEP.
-    """
-    field_names = str(parameter_name).split(LOOKUP_SEP)
-    if len(field_names) == 1:
-        return None
-    else:
-        rel_model = model
-        for name in field_names[:-1]:
-            rel_model = rel_model._meta.get_field(name).related_model
-        return rel_model
 
 
 def AutocompleteFilterFactory(title, field_name, **kwargs):
