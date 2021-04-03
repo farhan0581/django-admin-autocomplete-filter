@@ -94,19 +94,19 @@ class AutocompleteFilter(SimpleListFilter, metaclass=AutocompleteFilterMeta):
 
     # ########## Basic configuration ########## #
 
-    template = 'django-admin-autocomplete-filter/autocomplete-filter.html'  # overrides SimpleListFilter
-    # title =  # Default set in metaclass; can override by setting in subclass body
     field_name = None
     field_pk = 'pk'
-    use_pk_exact = True
-    is_placeholder_title = False
-    widget_attrs = {}
-    # parameter_name =  # Default set in metaclass; can override by setting in subclass body
     form_field = None
     form_widget = None
-    multi_select = False
-    view_name = None
+    is_placeholder_title = False
     label_by = None
+    multi_select = False
+    # parameter_name =  # Default set in metaclass; can override by setting in subclass body
+    template = 'django-admin-autocomplete-filter/autocomplete-filter.html'  # overrides SimpleListFilter
+    # title =  # Default set in metaclass; can override by setting in subclass body
+    use_pk_exact = True
+    view_name = None
+    widget_attrs = {}
 
     class Media:
         """
