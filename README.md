@@ -25,6 +25,8 @@ Features:
 
 * Custom search view/endpoint ([more details](#functionality-to-provide-custom-view-for-search))
 * `list_filter` Filter Factory support ([more details](#shortcut-for-creating-filters))
+* Filtering by remote fields ([more details](#remote-fields))
+* Multi-select filtering ([more details](#multi-select))
 * Custom widget text ([more details](#customizing-widget-text))
 * Support for [Grappelli](https://grappelliproject.com/)
 
@@ -65,7 +67,7 @@ from admin_auto_filters.filters import AutocompleteFilter
 
 
 class ArtistFilter(AutocompleteFilter):
-    title = 'Artist' # display title
+    title = 'Artist' # display title (optional)
     field_name = 'artist' # name of the foreign key field
 
 
@@ -162,6 +164,22 @@ class AlbumAdmin(admin.ModelAdmin):
         """As above..."""
 ```
 
+Remote Fields
+-------------
+
+In addition to filtering by fields on a model, you can filter by fields
+on another model linked to first via a chain of foreign key, many-to-many,
+or one-to-one relationships - or their reverses. This should work
+automatically when specifying such fields as the `field_name`, for example
+`field_name = city__country`. Note that the last field needs to be a
+relation field.
+
+Multi-Select
+------------
+
+It is possible to filter by the `OR` combination of multiple field values.
+Just set `multiselect = True` in the `AutocompleteFilter` subclass or
+as an argument to the `AutocompleteFilterFactory`.
 
 Customizing widget text
 -----------------------
