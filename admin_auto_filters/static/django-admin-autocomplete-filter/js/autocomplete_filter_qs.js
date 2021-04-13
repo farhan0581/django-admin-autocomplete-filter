@@ -50,8 +50,8 @@ function search_to_hash() {
     for (var i = 0; i < q.length; i++) {
       var key_val = q[i].split('=');
       // replace '+' (alt space) char explicitly since decode does not
-      var hkey = decodeURIComponent(key_val[0]).replace(/\+/g,' ');
-      var hval = decodeURIComponent(key_val[1]).replace(/\+/g,' ');
+      var hkey = decodeURIComponent(key_val[0].replace(/\+/g,' '));
+      var hval = decodeURIComponent(key_val[1].replace(/\+/g,' '));
       if (h[hkey] == undefined) {
         h[hkey] = [];
       }
