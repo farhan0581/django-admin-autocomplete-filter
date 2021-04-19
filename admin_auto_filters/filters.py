@@ -6,7 +6,7 @@ from django.db.models.constants import LOOKUP_SEP  # this is '__'
 from django.db.models.fields.related_descriptors import ReverseManyToOneDescriptor, ManyToManyDescriptor
 from django.forms.widgets import Media, MEDIA_TYPES, media_property
 from django.shortcuts import reverse
-
+from django import VERSION as DJANGO_VERSION
 
 class AutocompleteSelect(Base):
     def __init__(self, rel, admin_site, attrs=None, choices=(), using=None, custom_url=None):
@@ -50,7 +50,10 @@ class AutocompleteFilter(admin.SimpleListFilter):
         if self.rel_model:
             model = self.rel_model
 
-        remote_field = model._meta.get_field(self.field_name).remote_field
+        if DJANGO_VERSION >= (3, 2):
+            remote_field = model._meta.get_field(self.field_name)
+        else:
+            remote_field = model._meta.get_field(self.field_name).remote_field
 
         widget = AutocompleteSelect(remote_field,
                                     model_admin.admin_site,
