@@ -14,7 +14,7 @@ class FoodsThatAreFavorites(AutocompleteJsonView):
 
     def get_queryset(self):
 
-        # Get items in use
+        # Get items in use (would need to use related_query_name if applicable)
         foods = list(Food.objects.filter(person__isnull=False).values_list('id'))
         foods = list(set([item for sublist in foods for item in sublist if item is not None]))
 

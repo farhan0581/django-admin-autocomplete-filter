@@ -166,6 +166,7 @@
     "fields": {
       "best_friend": 1,
       "favorite_food": 1,
+      "least_favorite_food": 3,
       "name": "Bob",
       "siblings": [
         1,
@@ -179,6 +180,8 @@
     "fields": {
       "best_friend": 1,
       "favorite_food": 3,
+      "least_favorite_food": 2,
+      "twin": 1,
       "name": "Carol"
     },
     "model": "testapp.person",

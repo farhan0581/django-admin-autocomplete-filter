@@ -1,12 +1,12 @@
 from django.contrib.admin.widgets import AutocompleteSelect as Base
 from django import forms
 from django.contrib import admin
-from django.db.models import ManyToOneRel
+from django.db.models import ForeignObjectRel
 from django.db.models.constants import LOOKUP_SEP  # this is '__'
 from django.db.models.fields.related_descriptors import ReverseManyToOneDescriptor, ManyToManyDescriptor
 from django.forms.widgets import Media, MEDIA_TYPES, media_property
 from django.shortcuts import reverse
-
+from django import VERSION as DJANGO_VERSION
 
 class AutocompleteSelect(Base):
     def __init__(self, rel, admin_site, attrs=None, choices=(), using=None, custom_url=None):
@@ -50,7 +50,10 @@ class AutocompleteFilter(admin.SimpleListFilter):
         if self.rel_model:
             model = self.rel_model
 
-        remote_field = model._meta.get_field(self.field_name).remote_field
+        if DJANGO_VERSION >= (3, 2):
+            remote_field = model._meta.get_field(self.field_name)
+        else:
+            remote_field = model._meta.get_field(self.field_name).remote_field
 
         widget = AutocompleteSelect(remote_field,
                                     model_admin.admin_site,
@@ -85,9 +88,13 @@ class AutocompleteFilter(admin.SimpleListFilter):
             related_model = field_desc.rel.related_model if field_desc.reverse else field_desc.rel.model
         elif isinstance(field_desc, ReverseManyToOneDescriptor):
             related_model = field_desc.rel.related_model  # look at field_desc.related_manager_cls()?
-        elif isinstance(field_desc, ManyToOneRel):
+        elif isinstance(field_desc, ForeignObjectRel):
+            # includes ManyToOneRel, ManyToManyRel
+            # also includes OneToOneRel - not sure how this would be used
             related_model = field_desc.related_model
         else:
+            # primarily for ForeignKey/ForeignKeyDeferredAttribute
+            # also includes ForwardManyToOneDescriptor, ForwardOneToOneDescriptor, ReverseOneToOneDescriptor
             return field_desc.get_queryset()
         return related_model.objects.get_queryset()
 
