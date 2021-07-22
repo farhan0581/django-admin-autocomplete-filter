@@ -1,7 +1,7 @@
 from django.contrib.admin.widgets import AutocompleteSelect as Base
 from django import forms
 from django.contrib import admin
-from django.db.models import ForeignObjectRel
+from django.db.models.fields.related import ForeignObjectRel
 from django.db.models.constants import LOOKUP_SEP  # this is '__'
 from django.db.models.fields.related_descriptors import ReverseManyToOneDescriptor, ManyToManyDescriptor
 from django.forms.widgets import Media, MEDIA_TYPES, media_property
