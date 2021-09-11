@@ -102,7 +102,8 @@ class CustomSearchView(AutocompleteJsonView):
         """
            your custom logic goes here.
         """
-        queryset = Artist.objects.all().order_by('name')
+        queryset = super().get_queryset()
+        queryset = queryset.order_by('name')
         return queryset
 ```
 
