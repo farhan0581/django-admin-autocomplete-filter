@@ -28,6 +28,7 @@ class AutocompleteFilter(admin.SimpleListFilter):
     rel_model = None
     parameter_name = None
     form_field = forms.ModelChoiceField
+    form_widget_class = AutocompleteSelect
 
     class Media:
         js = (
@@ -55,7 +56,7 @@ class AutocompleteFilter(admin.SimpleListFilter):
         else:
             remote_field = model._meta.get_field(self.field_name).remote_field
 
-        widget = AutocompleteSelect(remote_field,
+        widget = self.form_widget_class(remote_field,
                                     model_admin.admin_site,
                                     custom_url=self.get_autocomplete_url(request, model_admin),)
         form_field = self.get_form_field()
