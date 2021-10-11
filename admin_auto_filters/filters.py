@@ -18,6 +18,16 @@ class AutocompleteSelect(Base):
 
 
 class AutocompleteFilter(admin.SimpleListFilter):
+    """
+    To use nested lookups you have to define
+    both `field_name` and `parameter_name`, for example:
+    
+    >>> class SupplierFilter(AutocompleteFilter):
+    >>>     title = _("Supplier")
+    >>>     field_name = "article__supplier"
+    >>>     parameter_name = "article__supplier"
+    """
+
     template = 'django-admin-autocomplete-filter/autocomplete-filter.html'
     title = ''
     field_name = ''
@@ -50,10 +60,14 @@ class AutocompleteFilter(admin.SimpleListFilter):
         if self.rel_model:
             model = self.rel_model
 
-        if DJANGO_VERSION >= (3, 2):
-            remote_field = model._meta.get_field(self.field_name)
-        else:
-            remote_field = model._meta.get_field(self.field_name).remote_field
+        remote_field = None
+        for part in self.field_name.split("__"):
+            if remote_field is None:
+                remote_field = model._meta.get_field(part)
+            else:
+                remote_field = remote_field.model._meta.get_field(part)
+            if DJANGO_VERSION < (3, 2):
+                remote_field = remote_field.remote_field
 
         widget = AutocompleteSelect(remote_field,
                                     model_admin.admin_site,
