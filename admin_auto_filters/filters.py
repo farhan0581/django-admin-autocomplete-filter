@@ -94,6 +94,12 @@ class AutocompleteFilter(admin.SimpleListFilter):
 
     @staticmethod
     def get_queryset_for_field(model, name):
+        current, _, other = name.partition("__")
+        while other:
+            model = model._meta.get_field(current).related_model
+            name = other
+            current, _, other = name.partition("__")
+
         try:
             field_desc = getattr(model, name)
         except AttributeError:
