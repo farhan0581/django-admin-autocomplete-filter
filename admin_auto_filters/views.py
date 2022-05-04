@@ -13,7 +13,12 @@ class AutocompleteJsonView(Base):
         return str(obj)
 
     def get(self, request, *args, **kwargs):
-        self.term = request.GET.get('term', '')
+        if not hasattr(self, 'model_admin') and hasattr(self, 'process_request'):
+            # Django>=3.2 initializes `model_admin` prop inside a view
+            # by `process_request` method:
+            self.term, self.model_admin, self.source_field, _ = self.process_request(request)
+        else:
+            self.term = request.GET.get('term', '')
         self.paginator_class = self.model_admin.paginator
         self.object_list = self.get_queryset()
         context = self.get_context_data()

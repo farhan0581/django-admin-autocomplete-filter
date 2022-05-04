@@ -120,7 +120,8 @@ class AlbumAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
-            path('custom_search/', self.admin_site.admin_view(CustomSearchView.as_view(model_admin=self)),
+            # for Django<3.2 add `model_admin=self` param to the `as_view` call below:
+            path('custom_search/', self.admin_site.admin_view(CustomSearchView.as_view()),
                  name='custom_search'),
         ]
         return custom_urls + urls
