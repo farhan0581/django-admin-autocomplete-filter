@@ -1,0 +1,60 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        versions:
+          - python: "3.6"
+            django: "2.0"
+          - python: "3.6"
+            django: "2.1"
+          - python: "3.6"
+            django: "2.2"
+          - python: "3.6"
+            django: "3.1"
+          - python: "3.6"
+            django: "3.2"
+
+          - python: "3.7"
+            django: "2.0"
+          - python: "3.7"
+            django: "2.1"
+          - python: "3.7"
+            django: "2.2"
+          - python: "3.7"
+            django: "3.1"
+          - python: "3.7"
+            django: "3.2"
+
+          - python: "3.8"
+            django: "2.2"
+          - python: "3.8"
+            django: "3.1"
+          - python: "3.8"
+            django: "3.2"
+
+          - python: "3.9"
+            django: "2.2"
+          - python: "3.9"
+            django: "3.1"
+          - python: "3.9"
+            django: "3.2"
+
+    name: "Python ${{ matrix.versions.python }} - Django ${{ matrix.versions.django }}"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.versions.python }}
+      - name: Install Dependencies
+        run: pip install "Django~=${{ matrix.versions.django }}.0"
+      - name: Run Tests
+        run: ./tests_manage.py test tests
