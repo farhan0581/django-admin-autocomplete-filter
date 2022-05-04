@@ -1,6 +1,10 @@
 """Define tests for the test app."""
 
 import json
+import unittest
+from urllib.parse import urlencode
+
+import django
 from django.contrib.admin.utils import flatten
 from django.contrib.auth.models import User
 from django.core import exceptions
@@ -81,13 +85,41 @@ class RootTestCase(object):
                     html=False, msg_prefix=str(url)
                 )
 
-    def test_admin_autocomplete_load(self):
+    @unittest.skipIf(django.VERSION >= (3, 2), reason='Autocomplete URL for Django < 3.2')
+    def test_admin_autocomplete_load_pre_32(self):
         """
-        Test that the admin autocomplete endpoint loads.
+        Test that the admin autocomplete endpoint loads on Django 3.2 and before.
         """
         for model_name in MODEL_NAMES:
             with self.subTest(model_name=model_name):
                 url = reverse('admin:testapp_%s_autocomplete' % model_name)
+                response = self.client.get(url, follow=False)
+                self.assertContains(response, '"results"')
+
+    @unittest.skipIf(django.VERSION < (3, 2), reason='Autocomplete URL for Django >= 3.2')
+    def test_admin_autocomplete_load_32_plus(self):
+        """
+        Test that the admin autocomplete endpoint loads on Django 3.2 or later.
+        """
+        model_field_name = [
+            # (Food, 'person'),
+            (Collection, 'curators'),
+            (Person, 'best_friend'),
+            (Person, 'twin'),
+            (Person, 'siblings'),
+            (Person, 'favorite_food'),
+            (Book, 'author'),
+            (Book, 'coll'),
+        ]
+        for model, field_name in model_field_name:
+            with self.subTest(model_name=model.__name__, field_name=field_name):
+                url = reverse('admin:autocomplete')
+                query_params = {
+                    'app_label': model._meta.app_label,
+                    'model_name': model._meta.model_name,
+                    'field_name': field_name,
+                }
+                url = url + '?' + urlencode(query_params)
                 response = self.client.get(url, follow=False)
                 self.assertContains(response, '"results"')
 

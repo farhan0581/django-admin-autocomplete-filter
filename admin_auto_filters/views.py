@@ -5,6 +5,8 @@ from django.contrib.admin.views.autocomplete import AutocompleteJsonView as Base
 class AutocompleteJsonView(Base):
     """Overriding django admin's AutocompleteJsonView"""
 
+    model_admin = None
+
     @staticmethod
     def display_text(obj):
         """
