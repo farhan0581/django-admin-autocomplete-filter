@@ -85,10 +85,10 @@ class RootTestCase(object):
                     html=False, msg_prefix=str(url)
                 )
 
-    @unittest.skipIf(django.VERSION >= (3, 2), reason='Autocomplete URL for Django < 3.2')
+    @unittest.skipIf(django.VERSION >= (3, 2), reason='URL moved in Django 3.2')
     def test_admin_autocomplete_load_pre_32(self):
         """
-        Test that the admin autocomplete endpoint loads on Django 3.2 and before.
+        Test that the admin autocomplete endpoint loads on Django < 3.2.
         """
         for model_name in MODEL_NAMES:
             with self.subTest(model_name=model_name):
@@ -96,10 +96,10 @@ class RootTestCase(object):
                 response = self.client.get(url, follow=False)
                 self.assertContains(response, '"results"')
 
-    @unittest.skipIf(django.VERSION < (3, 2), reason='Autocomplete URL for Django >= 3.2')
+    @unittest.skipIf(django.VERSION < (3, 2), reason='URL moved in Django 3.2')
     def test_admin_autocomplete_load_32_plus(self):
         """
-        Test that the admin autocomplete endpoint loads on Django 3.2 or later.
+        Test that the admin autocomplete endpoint loads on Django >= 3.2.
         """
         model_field_name = [
             # (Food, 'person'),
