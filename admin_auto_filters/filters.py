@@ -1,4 +1,4 @@
-from django.contrib.admin.widgets import AutocompleteSelect as Base
+from django.contrib.admin.widgets import AutocompleteSelectMultiple as Base
 from django import forms
 from django.contrib import admin
 from django.db.models.fields.related import ForeignObjectRel
@@ -8,7 +8,7 @@ from django.forms.widgets import Media, MEDIA_TYPES, media_property
 from django.shortcuts import reverse
 from django import VERSION as DJANGO_VERSION
 
-class AutocompleteSelect(Base):
+class AutocompleteSelectMultiple(Base):    
     def __init__(self, rel, admin_site, attrs=None, choices=(), using=None, custom_url=None):
         self.custom_url = custom_url
         super().__init__(rel, admin_site, attrs, choices, using)
@@ -27,7 +27,7 @@ class AutocompleteFilter(admin.SimpleListFilter):
     widget_attrs = {}
     rel_model = None
     parameter_name = None
-    form_field = forms.ModelChoiceField
+    form_field = forms.ModelMultipleChoiceField
 
     class Media:
         js = (
@@ -43,8 +43,7 @@ class AutocompleteFilter(admin.SimpleListFilter):
     def __init__(self, request, params, model, model_admin):
         if self.parameter_name is None:
             self.parameter_name = self.field_name
-            if self.use_pk_exact:
-                self.parameter_name += '__{}__exact'.format(self.field_pk)
+            self.parameter_name += '__{}__in'.format(self.field_pk)
         super().__init__(request, params, model, model_admin)
 
         if self.rel_model:
@@ -55,7 +54,7 @@ class AutocompleteFilter(admin.SimpleListFilter):
         else:
             remote_field = model._meta.get_field(self.field_name).remote_field
 
-        widget = AutocompleteSelect(remote_field,
+        widget = AutocompleteSelectMultiple(remote_field,
                                     model_admin.admin_site,
                                     custom_url=self.get_autocomplete_url(request, model_admin),)
         form_field = self.get_form_field()
@@ -74,7 +73,7 @@ class AutocompleteFilter(admin.SimpleListFilter):
             attrs['data-Placeholder'] = self.title
         self.rendered_widget = field.widget.render(
             name=self.parameter_name,
-            value=self.used_parameters.get(self.parameter_name, ''),
+            value=self.value(),
             attrs=attrs
         )
 
@@ -121,6 +120,12 @@ class AutocompleteFilter(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
         return ()
+
+    def value(self):
+        if self.used_parameters.get(self.parameter_name):
+            return self.used_parameters.get(self.parameter_name).split(',')
+        else:
+            return []
 
     def queryset(self, request, queryset):
         if self.value():
