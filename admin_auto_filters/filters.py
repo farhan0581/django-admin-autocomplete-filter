@@ -232,6 +232,7 @@ def AutocompleteFilterFactory(
             if viewname == "":
                 return super().get_autocomplete_url(request, model_admin)
             else:
-                return reverse(viewname)
+                # Pass the current GET parameters to the view. This allows to make co-dependent filters.
+                return reverse(viewname) + "?" + request.GET.urlencode()
 
     return NewFilter
