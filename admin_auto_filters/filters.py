@@ -65,6 +65,7 @@ class AutocompleteFilter(admin.SimpleListFilter):
             required=False,
         )
 
+        self.may_have_duplicates = admin.util.lookup_spawns_duplicates(model_admin.model._meta, self.parameter_name)
         self._add_media(model_admin, widget)
 
         attrs = self.widget_attrs.copy()
@@ -124,6 +125,8 @@ class AutocompleteFilter(admin.SimpleListFilter):
 
     def queryset(self, request, queryset):
         if self.value():
+            if self.may_have_duplicates:
+                queryset = queryset.distinct()
             return queryset.filter(**{self.parameter_name: self.value()})
         else:
             return queryset
