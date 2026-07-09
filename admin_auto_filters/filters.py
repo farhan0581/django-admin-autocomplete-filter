@@ -3,7 +3,13 @@ from django import forms
 from django.contrib import admin
 from django.db.models.fields.related import ForeignObjectRel
 from django.db.models.constants import LOOKUP_SEP  # this is '__'
-from django.db.models.fields.related_descriptors import ReverseManyToOneDescriptor, ManyToManyDescriptor
+from django.db.models.fields.related_descriptors import  (
+    ForwardManyToOneDescriptor,
+    ForwardOneToOneDescriptor,
+    ManyToManyDescriptor,
+    ReverseManyToOneDescriptor,
+    ReverseOneToOneDescriptor,
+)
 from django.forms.widgets import Media, MEDIA_TYPES, media_property
 from django.shortcuts import reverse
 from django import VERSION as DJANGO_VERSION
@@ -92,9 +98,17 @@ class AutocompleteFilter(admin.SimpleListFilter):
             # includes ManyToOneRel, ManyToManyRel
             # also includes OneToOneRel - not sure how this would be used
             related_model = field_desc.related_model
+        elif isinstance(field_desc, ReverseOneToOneDescriptor):
+            related_model = field_desc.related.related_model
+        elif isinstance(
+            field_desc,
+            ForwardManyToOneDescriptor | ForwardOneToOneDescriptor,
+        ):
+            related_model = field_desc.field.remote_field.model
+        elif hasattr(field_desc, 'descriptor'):
+            return field_desc.descriptor.get_queryset()
         else:
-            # primarily for ForeignKey/ForeignKeyDeferredAttribute
-            # also includes ForwardManyToOneDescriptor, ForwardOneToOneDescriptor, ReverseOneToOneDescriptor
+            # Fallback
             return field_desc.get_queryset()
         return related_model.objects.get_queryset()
 
